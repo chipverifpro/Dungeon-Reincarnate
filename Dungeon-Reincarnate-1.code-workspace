@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"tuple": "c"
+		},
+		"makefile.launchConfigurations": [
+			{
+				"cwd": "/Users/markpontius/Desktop/Programming/C/Dungeon-Reincarnate-1",
+				"binaryPath": "/Users/markpontius/Desktop/Programming/C/Dungeon-Reincarnate-1/dungeon",
+				"binaryArgs": []
+			}
+		]
+	}
+}

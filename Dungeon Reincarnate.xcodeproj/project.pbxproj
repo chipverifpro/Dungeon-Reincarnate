@@ -6,6 +6,25 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B8CDA9642CD0A618003E2E05 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9522CD0A618003E2E05 /* main.c */; };
+		B8CDA9652CD0A618003E2E05 /* items.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9502CD0A618003E2E05 /* items.c */; };
+		B8CDA9662CD0A618003E2E05 /* messages.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9572CD0A618003E2E05 /* messages.c */; };
+		B8CDA9682CD0A618003E2E05 /* player.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA95B2CD0A618003E2E05 /* player.c */; };
+		B8CDA9692CD0A618003E2E05 /* dungeon.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA94E2CD0A618003E2E05 /* dungeon.c */; };
+		B8CDA96A2CD0A618003E2E05 /* monster.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9592CD0A618003E2E05 /* monster.c */; };
+		B8CDA96B2CD0A618003E2E05 /* sdl_time.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9612CD0A618003E2E05 /* sdl_time.c */; };
+		B8CDA96C2CD0A618003E2E05 /* user_input.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9632CD0A618003E2E05 /* user_input.c */; };
+		B8CDA96D2CD0A618003E2E05 /* sdl_draw.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA95D2CD0A618003E2E05 /* sdl_draw.c */; };
+		B8CDA96E2CD0A618003E2E05 /* sdl_symbols.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA95F2CD0A618003E2E05 /* sdl_symbols.c */; };
+		B8CDA96F2CD0A618003E2E05 /* buttons.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA94C2CD0A618003E2E05 /* buttons.c */; };
+		B8CDA9702CD0A618003E2E05 /* battle.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA94A2CD0A618003E2E05 /* battle.c */; };
+		B8CDA9712CD0A618003E2E05 /* map_io.c in Sources */ = {isa = PBXBuildFile; fileRef = B8CDA9552CD0A618003E2E05 /* map_io.c */; };
+		B8CDAA162CD0B4AF003E2E05 /* libSDL2-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B8CDAA152CD0B4AF003E2E05 /* libSDL2-2.0.0.dylib */; };
+		B8CDAA1A2CD0B4D1003E2E05 /* libSDL2_image-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B8CDAA192CD0B4D1003E2E05 /* libSDL2_image-2.0.0.dylib */; };
+		B8CDAA1D2CD0B4E6003E2E05 /* libSDL2_ttf-2.0.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B8CDAA1C2CD0B4E6003E2E05 /* libSDL2_ttf-2.0.0.dylib */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		B8CDA93C2CD0A501003E2E05 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +39,36 @@
 
 /* Begin PBXFileReference section */
 		B8CDA93E2CD0A501003E2E05 /* Dungeon Reincarnate */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Dungeon Reincarnate"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8CDA9482CD0A618003E2E05 /* all_headers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = all_headers.h; sourceTree = "<group>"; };
+		B8CDA9492CD0A618003E2E05 /* battle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = battle.h; sourceTree = "<group>"; };
+		B8CDA94A2CD0A618003E2E05 /* battle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = battle.c; sourceTree = "<group>"; };
+		B8CDA94B2CD0A618003E2E05 /* buttons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = buttons.h; sourceTree = "<group>"; };
+		B8CDA94C2CD0A618003E2E05 /* buttons.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = buttons.c; sourceTree = "<group>"; };
+		B8CDA94D2CD0A618003E2E05 /* dungeon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dungeon.h; sourceTree = "<group>"; };
+		B8CDA94E2CD0A618003E2E05 /* dungeon.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dungeon.c; sourceTree = "<group>"; };
+		B8CDA94F2CD0A618003E2E05 /* items.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = items.h; sourceTree = "<group>"; };
+		B8CDA9502CD0A618003E2E05 /* items.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = items.c; sourceTree = "<group>"; };
+		B8CDA9512CD0A618003E2E05 /* main.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
+		B8CDA9522CD0A618003E2E05 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		B8CDA9542CD0A618003E2E05 /* map_io.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = map_io.h; sourceTree = "<group>"; };
+		B8CDA9552CD0A618003E2E05 /* map_io.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = map_io.c; sourceTree = "<group>"; };
+		B8CDA9562CD0A618003E2E05 /* messages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = messages.h; sourceTree = "<group>"; };
+		B8CDA9572CD0A618003E2E05 /* messages.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = messages.c; sourceTree = "<group>"; };
+		B8CDA9582CD0A618003E2E05 /* monster.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = monster.h; sourceTree = "<group>"; };
+		B8CDA9592CD0A618003E2E05 /* monster.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = monster.c; sourceTree = "<group>"; };
+		B8CDA95A2CD0A618003E2E05 /* player.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = player.h; sourceTree = "<group>"; };
+		B8CDA95B2CD0A618003E2E05 /* player.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = player.c; sourceTree = "<group>"; };
+		B8CDA95C2CD0A618003E2E05 /* sdl_draw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl_draw.h; sourceTree = "<group>"; };
+		B8CDA95D2CD0A618003E2E05 /* sdl_draw.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sdl_draw.c; sourceTree = "<group>"; };
+		B8CDA95E2CD0A618003E2E05 /* sdl_symbols.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl_symbols.h; sourceTree = "<group>"; };
+		B8CDA95F2CD0A618003E2E05 /* sdl_symbols.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sdl_symbols.c; sourceTree = "<group>"; };
+		B8CDA9602CD0A618003E2E05 /* sdl_time.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sdl_time.h; sourceTree = "<group>"; };
+		B8CDA9612CD0A618003E2E05 /* sdl_time.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sdl_time.c; sourceTree = "<group>"; };
+		B8CDA9622CD0A618003E2E05 /* user_input.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = user_input.h; sourceTree = "<group>"; };
+		B8CDA9632CD0A618003E2E05 /* user_input.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = user_input.c; sourceTree = "<group>"; };
+		B8CDAA152CD0B4AF003E2E05 /* libSDL2-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2-2.0.0.dylib"; path = "../../../SDL/sdl2/2.30.7/lib/libSDL2-2.0.0.dylib"; sourceTree = "<group>"; };
+		B8CDAA192CD0B4D1003E2E05 /* libSDL2_image-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2_image-2.0.0.dylib"; path = "../../../SDL/sdl2_image/2.8.2_2/lib/libSDL2_image-2.0.0.dylib"; sourceTree = "<group>"; };
+		B8CDAA1C2CD0B4E6003E2E05 /* libSDL2_ttf-2.0.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libSDL2_ttf-2.0.0.dylib"; path = "../../../SDL/sdl2_ttf/2.22.0/lib/libSDL2_ttf-2.0.0.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -35,6 +84,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8CDAA1D2CD0B4E6003E2E05 /* libSDL2_ttf-2.0.0.dylib in Frameworks */,
+				B8CDAA1A2CD0B4D1003E2E05 /* libSDL2_image-2.0.0.dylib in Frameworks */,
+				B8CDAA162CD0B4AF003E2E05 /* libSDL2-2.0.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +96,35 @@
 		B8CDA9352CD0A501003E2E05 = {
 			isa = PBXGroup;
 			children = (
+				B8CDA9482CD0A618003E2E05 /* all_headers.h */,
+				B8CDA9492CD0A618003E2E05 /* battle.h */,
+				B8CDA94A2CD0A618003E2E05 /* battle.c */,
+				B8CDA94B2CD0A618003E2E05 /* buttons.h */,
+				B8CDA94C2CD0A618003E2E05 /* buttons.c */,
+				B8CDA94D2CD0A618003E2E05 /* dungeon.h */,
+				B8CDA94E2CD0A618003E2E05 /* dungeon.c */,
+				B8CDA94F2CD0A618003E2E05 /* items.h */,
+				B8CDA9502CD0A618003E2E05 /* items.c */,
+				B8CDA9512CD0A618003E2E05 /* main.h */,
+				B8CDA9522CD0A618003E2E05 /* main.c */,
+				B8CDA9542CD0A618003E2E05 /* map_io.h */,
+				B8CDA9552CD0A618003E2E05 /* map_io.c */,
+				B8CDA9562CD0A618003E2E05 /* messages.h */,
+				B8CDA9572CD0A618003E2E05 /* messages.c */,
+				B8CDA9582CD0A618003E2E05 /* monster.h */,
+				B8CDA9592CD0A618003E2E05 /* monster.c */,
+				B8CDA95A2CD0A618003E2E05 /* player.h */,
+				B8CDA95B2CD0A618003E2E05 /* player.c */,
+				B8CDA95C2CD0A618003E2E05 /* sdl_draw.h */,
+				B8CDA95D2CD0A618003E2E05 /* sdl_draw.c */,
+				B8CDA95E2CD0A618003E2E05 /* sdl_symbols.h */,
+				B8CDA95F2CD0A618003E2E05 /* sdl_symbols.c */,
+				B8CDA9602CD0A618003E2E05 /* sdl_time.h */,
+				B8CDA9612CD0A618003E2E05 /* sdl_time.c */,
+				B8CDA9622CD0A618003E2E05 /* user_input.h */,
+				B8CDA9632CD0A618003E2E05 /* user_input.c */,
 				B8CDA9402CD0A501003E2E05 /* Dungeon Reincarnate */,
+				B8CDAA142CD0B4AF003E2E05 /* Frameworks */,
 				B8CDA93F2CD0A501003E2E05 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,6 +135,16 @@
 				B8CDA93E2CD0A501003E2E05 /* Dungeon Reincarnate */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B8CDAA142CD0B4AF003E2E05 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B8CDAA1C2CD0B4E6003E2E05 /* libSDL2_ttf-2.0.0.dylib */,
+				B8CDAA192CD0B4D1003E2E05 /* libSDL2_image-2.0.0.dylib */,
+				B8CDAA152CD0B4AF003E2E05 /* libSDL2-2.0.0.dylib */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +210,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B8CDA9642CD0A618003E2E05 /* main.c in Sources */,
+				B8CDA9652CD0A618003E2E05 /* items.c in Sources */,
+				B8CDA9662CD0A618003E2E05 /* messages.c in Sources */,
+				B8CDA9682CD0A618003E2E05 /* player.c in Sources */,
+				B8CDA9692CD0A618003E2E05 /* dungeon.c in Sources */,
+				B8CDA96A2CD0A618003E2E05 /* monster.c in Sources */,
+				B8CDA96B2CD0A618003E2E05 /* sdl_time.c in Sources */,
+				B8CDA96C2CD0A618003E2E05 /* user_input.c in Sources */,
+				B8CDA96D2CD0A618003E2E05 /* sdl_draw.c in Sources */,
+				B8CDA96E2CD0A618003E2E05 /* sdl_symbols.c in Sources */,
+				B8CDA96F2CD0A618003E2E05 /* buttons.c in Sources */,
+				B8CDA9702CD0A618003E2E05 /* battle.c in Sources */,
+				B8CDA9712CD0A618003E2E05 /* map_io.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -178,11 +281,16 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "/Users/markpontius/Desktop/Programming/C/SDL/**";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"\"-L/opt/homebrew/Cellar/sdl2/2.30.7/lib -L/opt/homebrew/Cellar/sdl2_image/2.8.2_2/lib -L/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib\"",
+					"\"-lSDL2 -lSDL2_image -lSDL2_ttf\"",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -233,10 +341,15 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"HEADER_SEARCH_PATHS[arch=*]" = "/Users/markpontius/Desktop/Programming/C/SDL/**";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = (
+					"\"-L/opt/homebrew/Cellar/sdl2/2.30.7/lib -L/opt/homebrew/Cellar/sdl2_image/2.8.2_2/lib -L/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib\"",
+					"\"-lSDL2 -lSDL2_image -lSDL2_ttf\"",
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -244,7 +357,22 @@
 		B8CDA9462CD0A501003E2E05 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2/2.30.7/include,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_image/2.8.2_2/include,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_ttf/2.22.0/include,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_ttf/2.22.0/include/SDL2,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_image/2.8.2_2/include/SDL2,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2/2.30.7/include/SDL2,
+				);
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"\"-L/opt/homebrew/Cellar/sdl2/2.30.7/lib\"",
+					"\"-L/opt/homebrew/Cellar/sdl2_image/2.8.2_2/lib\"",
+					"\"-L/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -252,7 +380,19 @@
 		B8CDA9472CD0A501003E2E05 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2/2.30.7/include/SDL2,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_image/2.8.2_2/include,
+					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_ttf/2.22.0/include,
+				);
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = (
+					"\"-L/opt/homebrew/Cellar/sdl2/2.30.7/lib\"",
+					"\"-L/opt/homebrew/Cellar/sdl2_image/2.8.2_2/lib\"",
+					"\"-L/opt/homebrew/Cellar/sdl2_ttf/2.22.0/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

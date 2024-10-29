@@ -1,0 +1,43 @@
+Dungeon Reincarnate revision and progress notes...
+
+10/29- Switch back to Xcode after MacOS-Sequoia update adds AI helpers.  Turn on bounds checking and squash route planning bugs. Write up plans.  Add 2 steps route following in unknown space.
+10/28- Add monster attack target also. put icons in targets. Adjust speeds, involve phases. Begin monsters.csv. [.BAKE]
+10/27- Battle mode begin.  Arena draw, targets bounce, scoring. redo for floating point.
+10/26- Added t key to cycle terrains in map edit. fixed get_any_walls() to check for one-sided walls. Toggle walls/doors/invis does both sides.  Added program icon.
+10/25- Continued village terrain.  Fixed up load and save maps to fully support terrain save.
+10/24- Added custom terrain to map cells.
+10/23- added chwd to allow launching not from terminal. Setup Cursor for makefile. Building city map.
+10/22- debugged coloring of objects, walls, doors, monsters.  Updated maps and objects files to include wall/door/floor texture and color. [.BAKD]
+10/21- implemented color of objects, walls, monsters.  Buggy.  Created global include file.
+10/20- Colorization of textures system (Blend, ColorMod, AphaMod). created tile,black,and white textures.
+10/19- implemented bump_back for keepout size.
+10/18- updated objects to have keepout size, unimplemented.  Implemented invisible walls in maps.
+10/17- Clean up dynamic memory usage. migrate to csv_split_offsets. Used gcc -fsanitize=address and squashed several bugs. snprintf conversions. Added more messages.
+10/16- Crystal walls texture. Add walls texture display. run-time vs game-time statistics.
+10/15- Implemented a monster, wanders unless player visible, then follows.
+10/14- Organize header files. Connected up messages. Buried pirate treasure. [.BAKC] Treasure Map.  Wrap text messages.
+10/13- Chest open/close. Pirate cave map.
+10/12- Use XCode to profile memory, and better lint. Back to Cursor. implement stairs up/down. Fixed Bug: items from chest don't have buttons.
+10/11- second map. messages began derived from buttons. Callgraphs based on Graphviz. Build in XCode.
+10/10- in progress: player any angle. in progress: inventory screen, new file user_input.c, move buttons to screen bottom.
+10/9 - implement gui button responses. WaitEvent instead of PollEvent for lower power consumption [.BAK10]
+10/8 - complete gui buttons generation from nearby map location.
+10/7 - implemented screen buttons using SDL_ttf.
+10/6 - experiments on clipping polygons failed.  Add items.c, dropping items, opening chest.  New graphic for fighter.
+10/5 - shadow texture map, clipping at map corners, not screen edges [.BAK9]
+10/4 - shadow polygons
+10/3 - completed shadow view endpoints code. sdl_gui.c cleanup [.BAK8]
+10/2 - work on shadow view, clean up map
+10/1 - print all objects, run -Wall (lint).  Start shadow view.
+9/30 - simple view [.BAK7]
+9/29 - CSV loading of map, auto open/close doors while travelling. Wall avoidance while following. movement checks are generic now.
+9/28 - Gimp cave, mouse travel, CSV loading of objects. [.BAK6]
+9/25 - major overhaul for floating point coordinates. swap Y-X, eliminate curses [.BAK5]
+9/22 - image filenames in map [.BAK4]
+9/21 - uses sdl_time and sdl_symbols [.BAK3]
+9/19 - uses sdl2 [.BAK2]
+9/16 - uses curses [.BAK1]
+9/15 - begin Dungeon Reincarnate 1.
+9/8  - ultima_3pt1: uses SDL2 graphics.
+9/7  - AI_Dungeon_new: monster in maze follows player. curses based.
+9/2  - AI_Dungeon_1: first AI dungeon experiment. generates a maze. curses based.

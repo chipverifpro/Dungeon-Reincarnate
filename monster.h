@@ -77,7 +77,8 @@ extern int monster_follow_route(int mnum);
 // called in user_input::handle_mouse_event
 extern int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doors, int use_known_space);
 
-int monster_view_simple(int mnum);
+extern int monster_view_simple(int mnum);
 
-int monster_visible_to_player(int mnum);
-void monster_random_walk(int mnum);
+extern int monster_visible_to_player(int mnum);
+extern int player_visible_to_monster(int mnum);
+extern void monster_random_walk(int mnum);

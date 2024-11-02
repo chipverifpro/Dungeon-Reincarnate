@@ -87,7 +87,7 @@ extern struct F_Point_s convert_scr_to_map(int scr_x, int scr_y);
 
 // helper functions
 extern struct F_Rect_s make_F_Rect(float x, float y, float size_x, float size_y);
-
+extern struct F_Point_s make_F_Point(float x, float y);
 //unused
 extern void print_frects(struct F_Rect_s *rlist, int rcnt); // debug
 extern void print_srects(SDL_Rect *rlist, int rcnt);        // debug
@@ -104,9 +104,11 @@ extern void dirty_display_handler(void); // render display if dirty flag set.
     extern int sdl_draw_shadows(float x_center, float y_center);         // draws shadows from visible walls
   // for creating a texture that will be used by draw_shadows
   extern SDL_Texture *create_render_texture (int size_x, int size_y);
-  int set_render_to_texture (SDL_Texture *texture, int clear,
+  extern int set_render_to_texture (SDL_Texture *texture_target, int clear,
                     uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 
 // called by main
 extern int sdl_start(void);                 // initializes SDL2
 extern int sdl_quit(void);                  // cleans and deallocates SDL2
+
+extern int SetRenderDrawColorPct(SDL_Renderer *renderer, SDL_Color c, float pct);

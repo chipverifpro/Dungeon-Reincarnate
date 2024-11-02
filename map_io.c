@@ -57,6 +57,7 @@ char csv_num_cells; // count of valid CSV cells in below two variables
 char *csv_line;     // line read from csv file, modified to replace , with \0
 int offsets[200];   // indexes to modified csv_line for each cell
 
+// TODO: Complete this function
 struct object_s *find_uid_owner(int uid) {
     struct object_s *uid_owner = NULL;
     return (uid_owner);
@@ -79,6 +80,8 @@ int read_map_csv (int load_map_number) {
             //map.terrain[x][y] = 0; // part of walls now.
         }
     }
+    map.view_distance = 100; // default
+    
     snprintf(filename,100,"Maps/map%d.csv",load_map_number);
     file = fopen(filename, "r"); // Open the file in read mode
     if (file == NULL) {
@@ -87,7 +90,7 @@ int read_map_csv (int load_map_number) {
     }
 
 
-    // LINE 1 = Map,1,Temple of Water,,,,,,,,,
+    // LINE 1 = Map,1,Temple of Water,(view distance)10,,,,,,,,
     csv_line = load_line(file);
     chomp(csv_line);   
     split_csv_line_offsets();
@@ -98,23 +101,17 @@ int read_map_csv (int load_map_number) {
     map.map_number = atoi(&csv_line[offsets[1]]);
     map.map_name = str_alloc_copy(&csv_line[offsets[2]]);
     current_map_num = map.map_number;
-    //map.wall_fname = str_alloc_copy(&csv_line[offsets[3]]);
-    switch (map.map_number) {
-    //case 1: map.wall_mode = 1; map.c_wall = color_from_rgba (0x00,0x00,0x20,0x20); break;
-    //case 2: map.wall_mode = 0; map.c_wall = color_from_rgba (COLOR_BLACK); break;
-    //case 3: map.wall_mode = 2; map.c_wall = color_from_rgba (COLOR_BLACK); break;
-    }
-    //if (strlen(map.walls_fname)>1) { // trailing quote might be left if empty string TODO:FIX
-        //map.walls_texture = load_symbol_texture(map.walls_fname, map.c_wall ,map.walls_mode);
-    //} else {
-        //map.walls_texture = NULL;
-    //}
-
+    map.view_distance = atoi(&csv_line[offsets[3]]);
+    map.travel_distance = atoi(&csv_line[offsets[3]]);
+    if (map.view_distance == 0) map.view_distance = 100; // default value is 100%
+    if (map.travel_distance == 0) map.travel_distance = 100; // default value is 100%
     // clear the terrains, ready to load new ones.
     for (tnum=0;tnum<10;tnum++) {
         map.terrains[tnum].wall_mode = map.terrains[tnum].floor_mode = map.terrains[tnum].door_mode = 0;
         map.terrains[tnum].NameT = NULL;
         map.terrains[tnum].wall_texture = map.terrains[tnum].floor_texture = map.terrains[tnum].door_open_texture = map.terrains[tnum].door_closed_texture = NULL;
+        map.terrains[tnum].view_cost = 10; // default percent
+        map.terrains[tnum].travel_cost = 100; // default percent
     };
     headers_done = 0;
     while (!headers_done) {
@@ -153,7 +150,7 @@ int read_map_csv (int load_map_number) {
             map.terrains[tnum].c_wall.g = hex>>16 & 0xFF;
             map.terrains[tnum].c_wall.b = hex>> 8 & 0xFF;
             map.terrains[tnum].c_wall.a = hex     & 0xFF;
-            if (strlen(map.terrains[tnum].wall_fname)>1) { // trailing quote might be left if empty string TODO:FIX
+            if (strlen(map.terrains[tnum].wall_fname)>1) {
                 map.terrains[tnum].wall_texture = load_symbol_texture(map.terrains[tnum].wall_fname, map.terrains[tnum].c_wall, map.terrains[tnum].wall_mode);
                 printf("loaded wall_texture wall_fname=%s, wall_texture=%p, wall_mode=%d\n",map.terrains[tnum].wall_fname, map.terrains[tnum].wall_texture, map.terrains[tnum].wall_mode);
             } else {
@@ -177,10 +174,10 @@ int read_map_csv (int load_map_number) {
             map.terrains[tnum].c_door.a = hex     & 0xFF;
             map.terrains[tnum].door_open_texture = NULL;
             map.terrains[tnum].door_closed_texture = NULL;
-            if (strlen(map.terrains[tnum].door_open_fname)>1) { // trailing quote might be left if empty string TODO:FIX
+            if (strlen(map.terrains[tnum].door_open_fname)>1) {
                 map.terrains[tnum].door_open_texture   = load_symbol_texture(map.terrains[tnum].door_open_fname,   map.terrains[tnum].c_door, map.terrains[tnum].door_mode);
             }
-            if (strlen(map.terrains[0].door_closed_fname)>1) { // trailing quote might be left if empty string TODO:FIX
+            if (strlen(map.terrains[0].door_closed_fname)>1) {
                 map.terrains[tnum].door_closed_texture = load_symbol_texture(map.terrains[tnum].door_closed_fname, map.terrains[tnum].c_door, map.terrains[tnum].door_mode);
             }
             printf(" door_mode = %d, door_open_fname   = %s, c_door=%d,%d,%d,%d\n", map.terrains[tnum].door_mode, map.terrains[tnum].door_open_fname, map.terrains[tnum].c_door.r, map.terrains[tnum].c_door.g, map.terrains[tnum].c_door.b, map.terrains[tnum].c_door.a);
@@ -196,13 +193,21 @@ int read_map_csv (int load_map_number) {
             map.terrains[tnum].c_floor.g = hex>>16 & 0xFF;
             map.terrains[tnum].c_floor.b = hex>> 8 & 0xFF;
             map.terrains[tnum].c_floor.a = hex     & 0xFF;
-            if (strlen(map.terrains[tnum].floor_fname)>1) { // trailing quote might be left if empty string TODO:FIX
+            if (strlen(map.terrains[tnum].floor_fname)>1) {
                 map.terrains[tnum].floor_texture = load_symbol_texture(map.terrains[tnum].floor_fname, map.terrains[tnum].c_floor, map.terrains[tnum].floor_mode);
             } else {
                 map.terrains[tnum].floor_texture = NULL;
             }
             printf(" floor_mode = %d, floor_fname = %s, c_floor=%d,%d,%d,%d\n", map.terrains[tnum].floor_mode, map.terrains[tnum].floor_fname, map.terrains[tnum].c_floor.r, map.terrains[tnum].c_floor.g, map.terrains[tnum].c_floor.b, map.terrains[tnum].c_floor.a);
 
+        } else if (strncmp(&csv_line[offsets[0]],"CostT",5)==0) {
+            tnum = atoi(&csv_line[offsets[0]]+6);
+            printf("CostT[%d]\n", tnum);
+            // CostT[tnum],view_cost,travel_cost,
+            map.terrains[tnum].view_cost = atoi(&csv_line[offsets[1]]);
+            map.terrains[tnum].travel_cost = atoi(&csv_line[offsets[2]]);
+            printf("terrain %d: view_cost = %d, travel_cost = %d\n",tnum, map.terrains[tnum].view_cost, map.terrains[tnum].travel_cost);
+            
         } else if (strcmp(&csv_line[offsets[0]],"#")==0) {
             // LINE = #,0,1,2,3,4,5,6,7,8,9,10,
             headers_done = 1;
@@ -304,7 +309,7 @@ int write_map_csv (void) {
 
 int read_objects_csv (char *filename) {
     FILE *file;
-    char * cell;
+    char *cell;
     //char * line;
     //int uid_owner_num;
     //int owner_mapnumber;

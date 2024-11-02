@@ -30,8 +30,11 @@ extern enum battle_phase_e battle_phase;
 // Called at beginning of game to load textures.
 extern void init_battle_arena(void);
 
+// get a floating point random number between min and max
+extern float frand (float min, float max);
+
 // called at beginning of each battle to setup monsters and start battle sequencer.
-extern void setup_new_battle(int num_monsters);
+extern void setup_new_battle(int num_battle_monsters);
 
 // Draw battlemap every screen refresh during SDL_DRAW::dirty_display_handler
 extern void draw_battlemap(void);

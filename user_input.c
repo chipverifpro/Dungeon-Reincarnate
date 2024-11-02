@@ -56,6 +56,7 @@ int handle_keyboard_event(SDL_Event event) {
     int inum;
     int tnum;
     char buf[200];
+    float step_size;
     //int button_num;
     num_events_keyboard++;
     switch (event.type) {
@@ -79,6 +80,7 @@ int handle_keyboard_event(SDL_Event event) {
                                  dirty_display = 6;
                                  break;
                 case SDLK_MINUS: sw_scale -= 1.5;
+                                 if (sw_scale < 1) sw_scale = 1;
                                  SDL_DestroyTexture(texture);
                                  texture = NULL;
                                  dirty_display = 6;
@@ -90,7 +92,7 @@ int handle_keyboard_event(SDL_Event event) {
                                     dirty_display = 1;
                                     snprintf(buf,200,"You picked up %s",objects[inum].description);
                                     printf("%s\n",buf);
-                                    message_create(buf,0);
+                                    message_create(buf,objects[inum].uid);
                                 }
                                 break;
                 case SDLK_p:    inum = player_drop_item(pl.x,pl.y);
@@ -138,11 +140,14 @@ int handle_keyboard_event(SDL_Event event) {
             }
     }
     if (status == running && event.type==SDL_KEYDOWN) {
+        step_size = pl.step_size * map.travel_distance * map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost / 10000;
+        printf("pl.step_size = %f, map.travel_distance = %d/100, terrain.travel_cost = %5d/100\n",pl.step_size,map.travel_distance,map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost);
+
         switch (event.key.keysym.sym) {
-            case SDLK_UP:    num_events_player_step++; pl.route_following = 0; player_move(0,pl.step_size); dirty_display = 1; break;
-            case SDLK_RIGHT: num_events_player_step++; pl.route_following = 0; player_move(1,pl.step_size); dirty_display = 1; break;
-            case SDLK_DOWN:  num_events_player_step++; pl.route_following = 0; player_move(2,pl.step_size); dirty_display = 1; break;
-            case SDLK_LEFT:  num_events_player_step++; pl.route_following = 0; player_move(3,pl.step_size); dirty_display = 1; break;
+            case SDLK_UP:    num_events_player_step++; pl.route_following = 0; player_move(0,step_size); dirty_display = 1; break;
+            case SDLK_RIGHT: num_events_player_step++; pl.route_following = 0; player_move(1,step_size); dirty_display = 1; break;
+            case SDLK_DOWN:  num_events_player_step++; pl.route_following = 0; player_move(2,step_size); dirty_display = 1; break;
+            case SDLK_LEFT:  num_events_player_step++; pl.route_following = 0; player_move(3,step_size); dirty_display = 1; break;
         }
     } else if (status == open) {
         switch (event.key.keysym.sym) {
@@ -239,7 +244,7 @@ int handle_soft_ui_button_event(int button_num) {
                     player_get_item_num(obj);
                     snprintf(buf,200,"You picked up %s",objects[obj].description);
                     printf("%s\n",buf);
-                    //message_create(buf,uid);
+                    message_create(buf,uid);
                     break;
                 case 'S': // stairs
                     //message_create(buf,uid,NULL);
@@ -276,7 +281,7 @@ int handle_soft_ui_button_event(int button_num) {
                     message_create(buf,uid);
                     break;
                 case 'F': // Fountain
-                    snprintf(buf,200,"A drink from the %s tastes like %s\n",objects[obj].description,objects[obj].custom_data);
+                    snprintf(buf,200,"A drink from the %s tastes like %s",objects[obj].description,objects[obj].custom_data);
                     printf("%s",buf);
                     message_create(buf,uid);
                     break;
@@ -424,7 +429,7 @@ void main_user_interface_loop(void) {
                     break;
             }
         }
-        // TODO: Do Object BumpBacks
+        // Do Object BumpBacks
         do_object_bumpbacks();
     }
     // end of game, print some debug stuff...

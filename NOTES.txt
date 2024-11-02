@@ -1,5 +1,7 @@
 Dungeon Reincarnate revision and progress notes...
 
+10/31- Fixed default travel costs.  Messages don't repeat; properly roll around 25 messages, more messages.  Vertical images had a divide by zero problem with determining tiling, fixed.
+10/30- Clean up lint warnings. Make messages a 25 entry circular list. Fixed zoom out crash. Added view range limits and per-terrain view and travel cost.  Fixed cave door graphic.
 10/29- Switch back to Xcode after MacOS-Sequoia update adds AI helpers.  Turn on bounds checking and squash route planning bugs. Write up plans.  Add 2 steps route following in unknown space.
 10/28- Add monster attack target also. put icons in targets. Adjust speeds, involve phases. Begin monsters.csv. [.BAKE]
 10/27- Battle mode begin.  Arena draw, targets bounce, scoring. redo for floating point.

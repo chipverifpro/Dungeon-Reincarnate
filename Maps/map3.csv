@@ -1,13 +1,15 @@
-Map,3,"Pirate Cave",
+Map,3,"Pirate Cave",50,100
 Size,24,24,
 NameT[0],"Cavern",
 WallT[0],2,000000FF,"GIMP/Cave-Wall-Texture-White.png",
-DoorT[0],2,0000FFFF,"GIMP/Cave-Wall-Texture-White.png","GIMP/Cave-Wall-Texture-White.png",
+DoorT[0],2,0000FFFF,"GIMP/Cave-Door-Texture-White.png","GIMP/Cave-Door-Texture-White.png",
 FloorT[0],1,4040FFFF,"PNG/FloorTile1.png",
+CostT[0],10,100
 NameT[1],"Blue Cave",
 WallT[1],0,0000FFFF,"GIMP/Cave-Wall-Texture-White.png",
 DoorT[1],0,0000FFFF,"GIMP/Cave-Wall-Texture-White.png","GIMP/Cave-Wall-Texture-White.png",
 FloorT[1],0,4040FFFF,"PNG/FloorTile1.png",
+CostT[1],10,100
 # , 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
  0,0009,0003,XXXX,XXXX,XXXX,XXXX,XXXX,000D,0001,0005,0003,XXXX,0001,0003,XXXX,0009,0005,0003,XXXX,000D,0001,0005,0003,XXXX
  1,000C,0004,0005,0003,XXXX,0009,0007,XXXX,000A,XXXX,000C,0005,0004,0000,0005,0006,XXXX,000A,XXXX,XXXX,000A,XXXX,000E,XXXX

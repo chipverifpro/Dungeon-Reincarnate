@@ -47,9 +47,9 @@ float frand (float min, float max) {
 }
 
 // called at beginning of each battle to setup monsters and start battle sequencer.
-void setup_new_battle(int num_monsters) {
+void setup_new_battle(int num_battle_monsters) {
     int i;
-    num_targets = num_monsters;
+    num_targets = num_battle_monsters;
     battle_timer = 0;
     for (i=0;i<num_monsters;i++) {
         // monster is the target

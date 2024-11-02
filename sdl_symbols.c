@@ -108,6 +108,7 @@ int draw_image (SDL_Texture *texture, int x,int y,int w,int h, int dir, int pane
     SDL_QueryTexture(texture, NULL, NULL, &t_size.x, &t_size.y);
 
     t_rects = (t_size.x / t_size.y);
+    if (t_rects<1) t_rects=1; // image is taller than wide
     src_rect.h = t_size.y;
     src_rect.w = t_size.y;
     src_rect.x = (panel%t_rects * t_size.y);

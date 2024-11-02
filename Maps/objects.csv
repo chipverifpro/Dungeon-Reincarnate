@@ -1,4 +1,4 @@
-﻿#Owner,Owner_num,UID,Loc_X,Loc_Y,dir,FEATURE/OBJECT(permanent),type,name,description,graphic_name,mode,colorRGBA,size,keepout,quantity,valid,Button,Custom-Data,Comment
+#Owner,Owner_num,UID,Loc_X,Loc_Y,dir,FEATURE/OBJECT(permanent),type,name,description,graphic_name,mode,colorRGBA,size,keepout,quantity,valid,Button,Custom-Data,Comment
 M,1,1,2.5,2.5,0,FEATURE,C,Chest,Locked Wooden Chest,PNG/chest-closed-locked.png,2,A1662FFF,0.75,,1,1,Unlock the,5,
 M,1,2,2.5,2.5,0,FEATURE,C,Chest,Closed Wooden Chest,PNG/chest-closed.png,2,A1662FFF,0.75,,1,0,Open the,,
 M,1,3,2.5,2.5,0,FEATURE,C,Chest,Open Wooden Chest,PNG/chest-open.png,2,A1662FFF,0.75,,1,0,Close the,,
@@ -25,3 +25,4 @@ M,3,25,10.5,19.5,0,FEATURE,C,Chest,Open Pirate Chest,PNG/chest-open.png,2,FF,0.7
 M,3,26,11.5,15.5,0,OBJECT,K,Shovel,Rusty Shovel,PNG/spade.png,2,FF,0.8,,1,1,Take,,
 U,24,27,0,0,0,OBJECT,W,Sword,Golden Helmet,PNG/viking-helmet.png,2,D4AF37FF,0.5,,1,1,Take,,
 M,4,28,0.5,0.5,0,FEATURE,S,Down,Stairs Leading Down,stairs_down,2,FF,1,,1,1,Climb,"Map1@0.5,5.5,0",
+M,1,29,1.5,1.5,0,FEATURE,M,Message,"A thick blue fog fills the chamber","",0,000000FF,0.75,,1,1,,,

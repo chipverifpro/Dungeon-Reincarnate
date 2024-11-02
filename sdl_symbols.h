@@ -10,3 +10,5 @@ extern int load_textures(void); // loads texture for each object on map
 
 // called by sdl_draw::sdl_draw_objects
 extern int draw_image (SDL_Texture *texture, int x,int y,int w,int h,int dir,int panel); // renders a texture
+
+

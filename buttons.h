@@ -34,7 +34,7 @@ extern void quit_ttf(void);     // library and font destroy
 // called by main
 extern void create_all_object_buttons(void);    // creates a button to match each object
   extern int button_create(char *text, int uid); // creation
-    extern SDL_Color color_from_rgba(int r, int g, int b, int a);// helper function
+    extern SDL_Color color_from_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);// helper function
     extern SDL_Texture *button_create_texture(int button_num);   // texture is only the TEXT, not frame/background
 
 // three unused functions
@@ -51,6 +51,9 @@ extern int which_button(int scr_x, int scr_y);   // converts screen coordinates 
 // called by sdl_draw::dirty_display_handler
 extern int display_buttons_for_objects(void);   // part of main draw routine
   extern int enable_disable_buttons_by_uid (int obj_uid, int enable); // converts text label to button number
+
+// Upper left corner buttons version
+extern int arrange_and_draw_UpperLeft_buttons(void);    // arrange and draw all active buttons
 
 // called by sdl_draw::dirty_display_handler
 //extern int arrange_and_draw_UpperLeft_buttons(void); // unused, old

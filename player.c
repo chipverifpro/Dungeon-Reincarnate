@@ -119,11 +119,14 @@ int imax(int a, int b) {
 
 int player_follow_route(void) {
     //int dir;
+    float step_size;
     int current_dist;
-    int x = pl.x;
-    int y = pl.y;
+    int x = ifloor(pl.x);
+    int y = ifloor(pl.y);
     if (pl.route_following ==0) return 0;     // nothing to follow now
-    current_dist = pl.target_map[x][y];
+    step_size = pl.step_size * map.travel_distance * map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost / 10000.0;
+    //printf("pl.step_size = %f, map.travel_distance = %d/100, terrain.travel_cosst = %5d/100\n",pl.step_size,map.travel_distance,map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost);
+    current_dist = pl.target_map[ifloor(x)][ifloor(y)];
     if (current_dist == 0) {
         float x_dist,y_dist;
         // go to exact location in target cell
@@ -131,48 +134,47 @@ int player_follow_route(void) {
         y_dist = pl.y - pl.target_y;
         //printf("x_dist(%f) = pl.target_x(%f) - pl.x(%f)\n",x_dist,pl.target_x,pl.x);
         //printf("y_dist(%f) = pl.target_y(%f) - pl.y(%f)\n",y_dist,pl.target_y,pl.y);
-        if        (x_dist>0) { player_move(3,(fmin(x_dist,pl.step_size))); return 1;
-        } else if (x_dist<0) { player_move(1,(fmin(-x_dist,pl.step_size))); return 1;
-        } else if (y_dist>0) { player_move(0,(fmin(y_dist,pl.step_size))); return 1;
-        } else if (y_dist<0) { player_move(2,(fmin(-y_dist,pl.step_size))); return 1;
+        if        (x_dist>0) { player_move(3,(fmin(x_dist, step_size))); return 1;
+        } else if (x_dist<0) { player_move(1,(fmin(-x_dist,step_size))); return 1;
+        } else if (y_dist>0) { player_move(0,(fmin(y_dist, step_size))); return 1;
+        } else if (y_dist<0) { player_move(2,(fmin(-y_dist,step_size))); return 1;
         } else {
             pl.route_following=0;
             return 0; // arrived at destination
         };
     }
     if (pl.option_avoid_walls) {
-        char walls = map.walls[ifloor(pl.x)][ifloor(pl.y)];
-        if ((pl.dir==0 || pl.dir==2) && (frac(pl.x)>0.75) && (get_wall(walls,1)==0x01)) {
-            player_move(3,pl.step_size);
+        if ((pl.dir==0 || pl.dir==2) && (frac(pl.x)>0.75) && (get_wall_xy(pl.x,pl.y,1)==0x01)) {
+            player_move(3,step_size);
             return 1;
         };
-        if ((pl.dir==0 || pl.dir==2) && (frac(pl.x)<0.25) && (get_wall(walls,3)==0x01)) {
-            player_move(1,pl.step_size);
+        if ((pl.dir==0 || pl.dir==2) && (frac(pl.x)<0.25) && (get_wall_xy(pl.x,pl.y,3)==0x01)) {
+            player_move(1,step_size);
             return 1;
         };
-        if ((pl.dir==1 || pl.dir==3) && (frac(pl.y)>0.75) && (get_wall(walls,2)==0x01)) {
-            player_move(0,pl.step_size);
+        if ((pl.dir==1 || pl.dir==3) && (frac(pl.y)>0.75) && (get_wall_xy(pl.x,pl.y,2)==0x01)) {
+            player_move(0,step_size);
             return 1;
         }
-        if ((pl.dir==1 || pl.dir==3) && (frac(pl.y)<0.25) && (get_wall(walls,0)==0x01)) {
-            player_move(2,pl.step_size);
+        if ((pl.dir==1 || pl.dir==3) && (frac(pl.y)<0.25) && (get_wall_xy(pl.x,pl.y,0)==0x01)) {
+            player_move(2,step_size);
             return 1;
         }
     }
     if ((y>0) && (pl.target_map[x][y-1] == current_dist-1) && (player_can_move(pl.x, pl.y, 0,1.0)==1.0)) {
-        player_move(0,pl.step_size);
+        player_move(0,step_size);
         return(1); // Success
     }
     if ((x<map.x_size-1) && (pl.target_map[x+1][y] == current_dist-1) && (player_can_move(pl.x, pl.y, 1,1.0)==1.0)) {
-        player_move(1,pl.step_size);
+        player_move(1,step_size);
         return(1); // Success
     }
     if ((y<map.y_size-1) && (pl.target_map[x][y+1] == current_dist-1) && (player_can_move(pl.x, pl.y, 2,1.0)==1.0)) {
-        player_move(2,pl.step_size);
+        player_move(2,step_size);
         return(1); // Success
     }
     if ((x>0) && (pl.target_map[x-1][y] == current_dist-1) && (player_can_move(pl.x, pl.y, 3,1.0)==1.0)) {
-        player_move(3,pl.step_size);
+        player_move(3,step_size);
         return(1); // Success
     }
     if ((y>0) && (pl.target_map[x][y-1] == current_dist-1) && (pl.option_open_doors && player_can_open(x,y,0))) {

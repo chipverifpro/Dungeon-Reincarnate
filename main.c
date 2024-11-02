@@ -24,13 +24,31 @@
 time_t start_time;
 time_t end_time;
 
+char *get_current_dir(void) {
+    static char path[PATH_MAX];
+    
+    // Get the path to the executable
+    if (getcwd(path, sizeof(path)) == NULL) {
+        perror("getcwd() error");
+        return NULL;
+    }
+    
+    if (chdir(path) != 0) {
+        perror("chdir() error");
+        return NULL;
+    }
+    
+    printf("Successfully changed directory to: %s\n", path);
+    return(path);
+}
+
 int main(int argc, char *argv[]) {
     //int i;
     //char map_filename[] = "Maps/map1.csv";
     char obj_filename[] = "Maps/objects.csv";
     char buf[150]; // welcome message
     
-    chdir("/Users/markpontius/Desktop/Programming/C/Dungeon-Reincarnate-1");
+    chdir("/Users/markpontius/desktop/programming/c/xcode/Dungeon Reincarnate XCode/Dungeon Reincarnate");
     srand((unsigned int)time(&start_time));
     printf("start_time = %ld\n",start_time);
     sdl_start();                 // initialize graphics library, create window, create timer

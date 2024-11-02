@@ -34,7 +34,6 @@ void send_user_event(int event_code) {
 
 Uint32 callback(Uint32 interval, void* name) {
     game_time++;
-    //dirty_display = 2;    // Turn this on where animation happens.
     send_user_event(1); // periodic wakeup to GUI loop to allow processing animations.
     
     return interval;

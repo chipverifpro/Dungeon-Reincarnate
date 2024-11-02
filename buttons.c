@@ -28,7 +28,7 @@ int button_border_size = 2;      // pixels added to text each side
 int button_spacing = 4;          // space between two buttons
 int buttons_from_edge_spacing = 8; // Don't draw buttons right at edge
 
-SDL_Color color_from_rgba(int r, int g, int b, int a) {
+SDL_Color color_from_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     SDL_Color dest;
     dest.r = r;  dest.g = g;  dest.b = b;  dest.a = a;
     return (dest);
@@ -290,13 +290,19 @@ void create_all_object_buttons(void) {
 // displays or hides buttons for nearby objects on map
 int display_buttons_for_objects (void) {
     float distance;
+    char buf[200];
     for (int o=0;o<num_objects;o++) {
         if (objects[o].valid) {
             distance = get_distance(objects[o].x, objects[o].y, pl.x, pl.y);
             if ((distance < objects[o].size)
                    && (objects[o].owner_num==map.map_number)
                    && (objects[o].owner=='M')) {
-                printf("You see: %s\n",objects[o].description);
+                //printf("You see: %s\n",objects[o].description);
+                snprintf(buf,200,"You see: %s",objects[o].description);
+                printf("%s\n",buf);
+                message_create(buf,objects[o].uid);
+                //break;
+
                 // enable buttons
                 enable_disable_buttons_by_uid (objects[o].uid, 1);
             } else {

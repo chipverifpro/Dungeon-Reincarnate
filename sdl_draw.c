@@ -630,7 +630,7 @@ int sdl_draw_shadows(float x_center, float y_center) {
             walls = map.walls[x][y];
             visible = map.visible[x][y];
 
-            if (visible==1) {
+            if (visible>0 && visible<255) {
                 // draw shadows behind all visible walls.
                 SDL_SetRenderDrawColor(renderer, COLOR_WHITE);
                 for (dir=0;dir<=3;dir++) {  // TODO
@@ -772,6 +772,7 @@ int sdl_draw_view(float x_center, float y_center, int style) {
     return (1);
 }
 
+// TODO: implement style?
 int sdl_draw_map(float x_center, float y_center, int style) {
     // variables for drawing walls
     int           x,y;        // map location we are working on
@@ -816,7 +817,7 @@ int sdl_draw_map(float x_center, float y_center, int style) {
             // clear the tile (draw the floor)
             if (off_map || visible==0) {  //TODO: Add style
                 SDL_SetRenderDrawColor(renderer, COLOR_GREY_D);
-            } else if (visible==2) {
+            } else if (visible==255) {
                 SetRenderDrawColorPct(renderer, map.terrains[tnum].c_floor,0.6);
                 //SDL_SetRenderDrawColor(renderer, COLOR_GREY_M);
             } else {
@@ -840,7 +841,7 @@ int sdl_draw_map(float x_center, float y_center, int style) {
                 if (!(off_map || visible==0)) {
                     // draw the wall symbols: perimiter 4 sides (walls or doors)
                     for (dir=0;dir<=3;dir++) {
-                        both_bits = get_both_bits(walls,dir);
+                        both_bits = get_both_bits_xy(x,y,dir);
                         //printf("both_bits: walls=%x, dir=%d\n",walls,dir);
                         if (both_bits == 0x01) {
                             draw_image(map.terrains[tnum].wall_texture,
@@ -883,7 +884,7 @@ int sdl_draw_map(float x_center, float y_center, int style) {
                     SetRenderDrawColorPct(renderer, map.terrains[tnum].c_wall,1.0);
                 }
                 for (dir=0;dir<=3;dir++) {
-                    both_bits = get_both_bits(walls,dir);
+                    both_bits = get_both_bits_xy(x,y,dir);
                     //printf("both_bits: walls=%x, dir=%d\n",walls,dir);
                     switch(both_bits) {
                     case 0x00: // open
@@ -968,7 +969,9 @@ int sdl_draw_monsters(float x_center, float y_center, int style) {
     for (int z=0; z<num_monsters; z++) {
         if (monsters[z].valid==1
                 && monsters[z].map_number == map.map_number
-                && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]==1){
+                && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]>0
+                && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]<255
+            ){
             if (monsters[z].graphic_type==1) {
                 dir =   monsters[z].dir;
                 if (monsters[z].option_graphic_dir==0) {dir=0;};
@@ -1006,20 +1009,20 @@ int sdl_draw_player(float x_center, float y_center, int style) {
 
 // initialize texture, used for shadow map.  Recreate whenever size_x, size_y changes.
 SDL_Texture *create_render_texture (int size_x, int size_y) {
-    SDL_Texture *texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+    SDL_Texture *return_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
 		SDL_TEXTUREACCESS_TARGET, size_x+1, size_y+1);
-    if (texture == NULL) {
+    if (return_texture == NULL) {
         printf("SDL_CreateTexture() returned NULL: %s\n",SDL_GetError());
         exit(-1);
     }
-    SDL_SetTextureBlendMode(texture,SDL_BLENDMODE_BLEND);
-    return texture;  
+    SDL_SetTextureBlendMode(return_texture,SDL_BLENDMODE_BLEND);
+    return return_texture;
 }
 
 // call with NULL to set render target back to window.
-int set_render_to_texture (SDL_Texture *texture, int clear,
+int set_render_to_texture (SDL_Texture *texture_target, int clear,
                 uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha) {
-    SDL_SetRenderTarget(renderer, texture); // redirect draw commands to texture
+    SDL_SetRenderTarget(renderer, texture_target); // redirect draw commands to texture
     if (clear == 1) {
         // set background color for entire window
         //SDL_SetRenderDrawColor(renderer, COLOR_GREY_D);

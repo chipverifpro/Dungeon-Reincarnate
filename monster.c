@@ -25,46 +25,48 @@ int num_monsters;
 void monster_create(int mnum) {
     monsters[mnum].name = "Mimic";
     monsters[mnum].uid = 1;
-    monsters[mnum].common_type = 'M';
+    monsters[mnum].common_type = 'M';  // M=for monster
     monsters[mnum].description = "A hungry treasure chest";
-    monsters[mnum].graphic_type = 1; //symbol
+    monsters[mnum].graphic_type = 1;   // 1=symbol
     monsters[mnum].graphic_name = "PNG/mimic-chest.png";
-    monsters[mnum].graphic_color =  color_from_rgba(COLOR_GREEN);
-    monsters[mnum].monster_mode = 2;
+    monsters[mnum].graphic_color = color_from_rgba(COLOR_GREEN);
+    monsters[mnum].monster_mode = 2;   // 2 = colorized symbol
     monsters[mnum].texture = load_symbol_texture(monsters[mnum].graphic_name, monsters[mnum].graphic_color, monsters[mnum].monster_mode);
-    monsters[mnum].frect_count = 0;
-    monsters[mnum].size = 0.75;
-    monsters[mnum].valid = 1;
-    monsters[mnum].comment = "";
-    monsters[mnum].custom_data = "";
+    monsters[mnum].frect_count = 0;    // unused
+    monsters[mnum].size = 0.75;        // 75% of a tile
+    monsters[mnum].valid = 1;          // 1 = Happy
+    monsters[mnum].comment = "";       // unused
+    monsters[mnum].custom_data = "";   // unused
     
-    monsters[mnum].x=10.5;                // current location across map
-    monsters[mnum].y=10.5;                // current location down map
+    monsters[mnum].x=10.5;             // current location across map
+    monsters[mnum].y=10.5;             // current location down map
     monsters[mnum].dir=3;              // current direction
     monsters[mnum].map_number=1;       // current map
-    monsters[mnum].route_following=0;    //
-    monsters[mnum].target_x=0.0;         // Target location for route planning
-    monsters[mnum].target_y=0.0;
-    monsters[mnum].step_size=0.1;        // TODO: Rename speed
+    
+    monsters[mnum].route_following=0;  // 0=wandering, 1=following
+    monsters[mnum].target_x=0.0;       // Target location for route planning
+    monsters[mnum].target_y=0.0;       //
+    monsters[mnum].step_size=0.1;      // TODO: Rename speed
 
-    monsters[mnum].health = 5;
+    monsters[mnum].health = 5;         // Battle parameters
     monsters[mnum].damage = 2;
     monsters[mnum].weapon_name = "Teeth";
     monsters[mnum].armor_class = 8;
 
-    for (int y=0; y<64; y++) {
+    for (int y=0; y<64; y++) {         // clear the monster's working maps
         for (int x=0; x<64; x++) {
             monsters[mnum].target_map[x][y] = 0;
             monsters[mnum].known_map[x][y] = 0;
         }
     }
 
-    monsters[mnum].option_open_doors=0;  // will auto-open a door if you try to walk through it
-    monsters[mnum].option_close_doors=0; // will auto-close a door after you walk through it
-    monsters[mnum].option_avoid_walls=1; // will walk away from a wall when too close.
-    monsters[mnum].option_graphic_dir=0; // whether graphic rotates to direction.
+    monsters[mnum].option_open_doors=0;  // 1 = will auto-open a door if you try to walk through it.
+    monsters[mnum].option_close_doors=0; // 1 = will auto-close a door after you walk through it.
+    monsters[mnum].option_avoid_walls=1; // 1 = will walk away from a wall when too close.
+    monsters[mnum].option_graphic_dir=0; // 1 = graphic rotates to direction faced.
 }
 
+// Teleport, used for initial position mostly
 void monster_move_to(int mnum, float x, float y, int dir) {
     monsters[mnum].x = x;
     monsters[mnum].y = y;
@@ -403,20 +405,20 @@ int monster_visible_to_player(int mnum) {
     int x,y;
     x = ifloor(monsters[mnum].x);
     y = ifloor(monsters[mnum].y);
-    return (map.visible[x][y]);
+    return (map.visible[x][y]>=1 && map.visible[x][y]<255);
 }
 
 int player_visible_to_monster(int mnum) {
     int x,y;
     x = ifloor(pl.x);
     y = ifloor(pl.y);
-    return (monsters[mnum].known_map[x][y]==1);
+    return (monsters[mnum].known_map[x][y]>=1 && monsters[mnum].known_map[x][y]<255);
 }
 
 void monster_random_walk(int mnum) {
     int dir;
     monster_view_simple(mnum);
-    if (monster_visible_to_player(mnum)==1) {
+    if (monster_visible_to_player(mnum)) {
         dirty_display = 10;
     }
     if (player_visible_to_monster(mnum)) {
@@ -427,7 +429,7 @@ void monster_random_walk(int mnum) {
         dir = rand() % 4;
         monster_move(mnum, dir, monsters[mnum].step_size);
     };
-    if (monster_visible_to_player(mnum)==1) {
+    if (monster_visible_to_player(mnum)) {
         dirty_display = 10;
     }
 }

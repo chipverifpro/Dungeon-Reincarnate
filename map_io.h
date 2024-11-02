@@ -9,6 +9,7 @@ extern int read_map_csv (int load_map_number); // Read map
   extern void split_csv_line_offsets(void);
   extern uint32_t parse_hex(char *hex_str);
   extern int print_raw_map(void);
+extern uint32_t ctoi (SDL_Color c);
 extern int write_map_csv (void);               // Write current map
 
 extern int read_objects_csv (char *filename);  // Read objects

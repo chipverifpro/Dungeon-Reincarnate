@@ -81,7 +81,7 @@ struct terrain_s {
     char *wall_fname;    // filename for walls texture
     SDL_Texture *wall_texture; // the walls texture
     SDL_Color c_wall;     // wall color (when visible)
-
+    
     // Doors
     int door_mode;
     char *door_open_fname;
@@ -89,12 +89,15 @@ struct terrain_s {
     SDL_Texture *door_open_texture;
     SDL_Texture *door_closed_texture;
     SDL_Color c_door;     // door color (when visible)
-
+    
     // Floors
     int floor_mode;
     char *floor_fname;
     SDL_Texture *floor_texture;
     SDL_Color c_floor;    // floor color (when visible)
+    
+    int view_cost;        // limits how far can be seen
+    int travel_cost;      // limits how far can be seen
 };
 
 // everything to know about the map
@@ -105,6 +108,8 @@ struct map_s {
 
     struct terrain_s terrains[10];
 
+    int view_distance;    // how far to see on this map
+    int travel_distance;  // how far to move per step on this map
     SDL_Color c_fog;      // fog modifier for known areas of map
     SDL_Color c_unk;      // unknown area color
 
@@ -155,16 +160,25 @@ extern int num_objects;
 #define ifloor(f) ((int)floor(f))
 // Function prototypes
 // called by sdl_draw:: and player:: and dungeon::
-extern int get_wall(int number, int position);       // returns bit[0] whether wall is present in dir
+extern int get_wall(int number, int position);
+extern int get_wall_xy(float x, float y, int dir);
 extern int get_door(int number, int position);       // returns bit[4] whether door is present in dir
+extern int get_door_xy(float x, float y, int dir);
+extern int get_keepout(int number, int dir);
+extern int get_keepout_xy(float x, float y, int dir);
 extern int get_both_bits(int number, int position);  // OR of both get_wall and get_door
+extern int get_both_bits_xy(float x, float y, int dir);
 extern int toggle_wall_xy(float x, float y, int dir, int offset);
 extern int get_any_wall(int number, int position);   // invisible walls count as walls
 extern int get_any_wall_xy(float x, float y, int dir);
 extern int opposite(int dir);                        // opposite direction from dir
 extern int rotate_r(int dir);                        // right rotation from dir
 extern int rotate_l(int dir);                        // left rotation from dir
-
+extern int get_terrain_xy(int x, int y);
+extern int get_view_cost_xy(int x, int y);
+extern int get_travel_cost_xy(int x, int y);
+extern int get_view_distance(void);
+extern int get_travel_distance(void);
 // unused
 extern float dir_to_degrees(int dir);
 

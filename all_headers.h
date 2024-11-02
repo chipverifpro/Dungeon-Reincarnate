@@ -16,6 +16,7 @@
 
 #include "dungeon.h"
 #include "main.h"
+#include "battle.h"
 #include "buttons.h"
 #include "items.h"
 #include "map_io.h"
@@ -26,4 +27,3 @@
 #include "sdl_symbols.h"
 #include "sdl_time.h"
 #include "user_input.h"
-#include "battle.h"

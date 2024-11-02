@@ -1,21 +1,6 @@
 // sdl_buttons.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "dungeon.h"
-#include "items.h"
-#include "sdl_time.h"
-#include "sdl_draw.h"
-#include "player.h"
-#include "map_io.h"
-#include "buttons.h"
-*/
-
 // Global Variables
 TTF_Font *font;
 

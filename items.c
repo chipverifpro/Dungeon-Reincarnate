@@ -2,21 +2,6 @@
 // This file contains functions relating to items and other objects.
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "dungeon.h"
-#include "items.h"
-#include "player.h"
-#include "sdl_draw.h"
-#include "sdl_symbols.h"
-#include "map_io.h"
-#include "messages.h"
-*/
-
 // picks up first available object within reach radius.
 // TODO: Find closest object first.
 int player_get_item(float x, float y) {

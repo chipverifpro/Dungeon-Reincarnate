@@ -1,5 +1,7 @@
 Dungeon Reincarnate revision and progress notes...
 
+11/2 - Monsters can be made to face left or right instead of 0 or 4 dirs.
+11/1 - Implemented monster.csv loading. Pac-man ghosts and an Ultima III dragon.
 10/31- Fixed default travel costs.  Messages don't repeat; properly roll around 25 messages, more messages.  Vertical images had a divide by zero problem with determining tiling, fixed.
 10/30- Clean up lint warnings. Make messages a 25 entry circular list. Fixed zoom out crash. Added view range limits and per-terrain view and travel cost.  Fixed cave door graphic.
 10/29- Switch back to Xcode after MacOS-Sequoia update adds AI helpers.  Turn on bounds checking and squash route planning bugs. Write up plans.  Add 2 steps route following in unknown space.

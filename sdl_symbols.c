@@ -1,22 +1,6 @@
 // sdl_symbols.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "dungeon.h"
-#include "items.h"
-#include "sdl_time.h"
-#include "sdl_draw.h"
-#include "player.h"
-#include "sdl_symbols.h"
-#include "buttons.h"
-*/
-
 int load_textures(void) {
     int num;
     int num_failures=0;
@@ -33,6 +17,28 @@ int load_textures(void) {
             } else {
                 printf("Success texture=%p\n",&objects[num].texture);
                 objects[num].graphic_type = 1; // 1 = image texture
+            }
+        }
+    }
+    return num_failures;
+}
+
+int load_monster_textures(void) {
+    int mnum;
+    int num_failures=0;
+    printf("load_monster_textures() loading %d monsters.\n",num_monsters);
+    for (mnum=0;mnum<num_monsters;mnum++) {
+        if (monsters[mnum].graphic_type==0) {
+            printf("Loading texture for %s from file \"%s\", monster_mode = %d\n",monsters[mnum].description, monsters[mnum].graphic_name, monsters[mnum].monster_mode);
+            monsters[mnum].texture = load_symbol_texture(monsters[mnum].graphic_name, monsters[mnum].graphic_color, monsters[mnum].monster_mode);
+            
+            if (monsters[mnum].texture==NULL) {
+                printf("FAILED, returned NULL: %s\n",SDL_GetError());
+                num_failures++;
+                monsters[mnum].graphic_type = 0; // 0 = none
+            } else {
+                printf("Success texture=%p\n",&monsters[mnum].texture);
+                monsters[mnum].graphic_type = 1; // 1 = image texture
             }
         }
     }
@@ -102,13 +108,17 @@ int draw_image (SDL_Texture *texture, int x,int y,int w,int h, int dir, int pane
     angle = dir *90.0;
     center_pt.x = w/2.0; center_pt.y = h/2.0;
     flip = SDL_FLIP_NONE;
-
+    if (dir==-3) {
+        flip = SDL_FLIP_HORIZONTAL;
+        dir = 0;
+    }
+    angle = dir *90.0;
 //    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
     SDL_Point t_size;
     SDL_QueryTexture(texture, NULL, NULL, &t_size.x, &t_size.y);
 
     t_rects = (t_size.x / t_size.y);
-    if (t_rects<1) t_rects=1; // image is taller than wide
+    if (t_rects<1) t_rects=1; // image is taller than wide, only a single panel
     src_rect.h = t_size.y;
     src_rect.w = t_size.y;
     src_rect.x = (panel%t_rects * t_size.y);

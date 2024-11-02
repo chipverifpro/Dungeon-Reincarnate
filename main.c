@@ -1,24 +1,5 @@
 // main.c
 #include "all_headers.h"
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#include "main.h"
-#include "dungeon.h"
-#include "items.h"
-#include "player.h"
-#include "map_io.h"
-#include "sdl_draw.h"
-#include "user_input.h"
-#include "sdl_symbols.h"
-#include "buttons.h"
-#include "monster.h"
-#include "messages.h"
-*/
 
 // Global variables
 time_t start_time;
@@ -62,7 +43,9 @@ int main(int argc, char *argv[]) {
     printf("read_objects_csv \"%s\" complete: num_objects = %d\n",obj_filename,num_objects);
 
     load_textures();             // load images for all objects.  
-    monster_create(num_monsters); num_monsters++;
+    num_monsters = load_monsters("Maps/monsters.csv");
+    load_monster_textures();
+    //monster_create(num_monsters); num_monsters++;
     create_all_object_buttons(); // creates a map UI button for each object that needs one
 
     snprintf(buf,150,"Welcome to Dungeon Reincarnate.  You have arrived at %s",map.map_name);

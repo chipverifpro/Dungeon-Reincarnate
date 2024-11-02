@@ -1,22 +1,6 @@
 // messages.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "dungeon.h"
-#include "buttons.h"
-#include "messages.h"
-#include "items.h"
-#include "sdl_time.h"
-#include "sdl_draw.h"
-#include "player.h"
-#include "map_io.h"
-*/
-
 struct button_s *messages = NULL; // list of messages
 int *life;
 

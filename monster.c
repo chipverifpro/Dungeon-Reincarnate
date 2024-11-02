@@ -1,26 +1,206 @@
 // player.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+// define the columns of the CSV file
+enum csvm_fields {
+    CSVM_UID         = 0,
+    CSVM_LOCX        = 1,
+    CSVM_LOCY        = 2,
+    CSVM_DIR         = 3,
+    CSVM_MAP         = 4,
+    CSVM_NAME        = 5,
+    CSVM_TYPE        = 6,
+    CSVM_DESCRIPTION = 7,
+    CSVM_GRAPHIC_NAME= 8,
+    CSVM_MODE        = 9,
+    CSVM_COLOR_RGBA  =10,
+    CSVM_SIZE        =11,
+    CSVM_VALID       =12,
+    CSVM_COMMENT     =13,
+    CSVM_CUSTOM_DATA =14,
+    CSVM_SPEED       =15,
+    CSVM_HP          =16,
+    CSVM_DAMAGE      =17,
+    CSVM_WEAPON_NAME =18,
+    CSVM_AC          =19,
+    CSVM_GRAPHIC_DIR =20,
+    CSVM_OPEN_DOORS  =21,
+    CSVM_CLOSE_DOORS =22,
+    CSVM_QUANTITY    =23
+};
 
-#include "dungeon.h"
-#include "monster.h"
-#include "items.h"
-#include "player.h"
-#include "sdl_draw.h"
-#include "sdl_symbols.h"
-#include "messages.h"
-#include "buttons.h"
-*/
+enum csvm_fields fields;
 
 // GLOBAL variables
 struct monster_s monsters[20];
 int num_monsters;
+
+int load_monsters(char *filename) {
+    int mnum;
+    FILE *file;
+    char *cell;
+    struct monster_s mon;
+    
+    file = fopen(filename, "r"); // Open the file in read mode
+    if (file == NULL) {
+        printf("Could not open file %s\n", filename);
+        return 1; // Exit if the file cannot be opened
+    }
+    // line 1 comment headers
+    csv_line = load_line(file);
+    chomp(csv_line);
+    split_csv_line_offsets();
+    if (csv_line[offsets[0]]!='#') {
+        printf("Invalid map file %s.  Must begin with the word Map instead of %s\n",filename,&csv_line[offsets[0]]);
+        //        exit(-1);
+    }
+    
+    for (mnum=0; mnum<20; mnum++) {
+        csv_line = load_line(file);
+        if (csv_line==NULL) break;
+        chomp(csv_line);
+        printf("monster csv_line = %s\n",csv_line);
+        split_csv_line_offsets();
+        //----- CSVM_UID -----
+        cell=&csv_line[offsets[CSVM_UID]];
+        mon.uid = atoi(cell);
+        printf("*** UID = %d\n",mon.uid);
+        
+        //----- CSVM_LOCX -----
+        cell=&csv_line[offsets[CSVM_LOCX]];
+        mon.x = atof(cell);
+        
+        //----- CSVM_LOCY -----
+        cell=&csv_line[offsets[CSVM_LOCY]];
+        mon.y = atof(cell);
+        printf("*** LOC = %f,%f\n",mon.x, mon.y);
+        
+        //----- CSVM_DIR -----
+        cell=&csv_line[offsets[CSVM_DIR]];
+        mon.dir = atoi(cell);
+        printf("*** DIR = %d\n",mon.dir);
+        
+        //----- CSVM_MAP -----
+        cell=&csv_line[offsets[CSVM_MAP]];
+        mon.map_number = atoi(cell);
+        printf("*** MAP = %d\n",mon.map_number);
+        
+        //----- CSVM_NAME -----
+        cell=&csv_line[offsets[CSVM_NAME]];
+        mon.name = str_alloc_copy(cell);
+        printf("*** NAME = %s\n",mon.name);
+        
+        //----- CSVM_TYPE -----
+        cell=&csv_line[offsets[CSVM_TYPE]];
+        mon.common_type = atoi(cell);
+        printf("*** TYPE = %d\n",mon.common_type);
+        
+        //----- CSVM_DESCRIPTION -----
+        cell=&csv_line[offsets[CSVM_DESCRIPTION]];
+        mon.description = str_alloc_copy(cell);
+        printf("*** DESCRIPTION = %s\n",mon.description);
+        
+        //----- CSVM_GRAPHIC_NAME -----
+        cell=&csv_line[offsets[CSVM_GRAPHIC_NAME]];
+        mon.graphic_name = str_alloc_copy(cell);
+        printf("*** GRAPHIC_NAME = %s\n",mon.graphic_name);
+        
+        //----- CSVM_MODE -----
+        cell=&csv_line[offsets[CSVM_MODE]];
+        mon.monster_mode = atoi(cell);
+        printf("*** MODE = %d\n",mon.monster_mode);
+        
+        //----- CSVM_COLOR_RGBA -----
+        cell=&csv_line[offsets[CSVM_COLOR_RGBA]];
+        uint32_t graphic_color_hex = parse_hex(cell);
+        printf("*** COLOR = %08X\n",graphic_color_hex);
+        mon.graphic_color.r = (graphic_color_hex & 0xFF000000) >> 24;
+        mon.graphic_color.g = (graphic_color_hex & 0x00FF0000) >> 16;
+        mon.graphic_color.b = (graphic_color_hex & 0x0000FF00) >>  8;
+        mon.graphic_color.a = (graphic_color_hex & 0x000000FF);
+        //printf("*** DIR = %d\n",mon.dir);
+        
+        //----- CSVM_SIZE -----
+        cell=&csv_line[offsets[CSVM_SIZE]];
+        mon.size = atof(cell);
+        printf("*** SIZE = %f\n",mon.size);
+        
+        //----- CSVM_VALID -----
+        cell=&csv_line[offsets[CSVM_VALID]];
+        mon.valid = atoi(cell);
+        printf("*** VALID = %d\n",mon.valid);
+        
+        //----- CSVM_COMMENT -----
+        cell=&csv_line[offsets[CSVM_COMMENT]];
+        mon.comment = str_alloc_copy(cell);
+        printf("*** COMMENT = %s\n",mon.comment);
+        
+        //----- CSVM_CUSTOM_DATA -----
+        cell=&csv_line[offsets[CSVM_CUSTOM_DATA]];
+        mon.custom_data = str_alloc_copy(cell);
+        printf("*** CUSTOM_DATA = %s\n",mon.custom_data);
+        
+        //----- CSVM_SPEED -----
+        cell=&csv_line[offsets[CSVM_SPEED]];
+        mon.step_size = atof(cell);
+        printf("*** SPEED = %f\n",mon.step_size);
+        
+        //----- CSVM_HP -----
+        cell=&csv_line[offsets[CSVM_HP]];
+        mon.health = atoi(cell);
+        printf("*** HP = %d\n",mon.health);
+        
+        //----- CSVM_DAMAGE -----
+        cell=&csv_line[offsets[CSVM_DAMAGE]];
+        mon.damage = atoi(cell);
+        printf("*** DAMAGE = %d\n",mon.damage);
+        
+        //----- CSVM_WEAPON_NAME -----
+        cell=&csv_line[offsets[CSVM_WEAPON_NAME]];
+        mon.weapon_name = str_alloc_copy(cell);
+        printf("*** WEAPON_NAME = %s\n",mon.weapon_name);
+        
+        //----- CSVM_AC -----
+        cell=&csv_line[offsets[CSVM_AC]];
+        mon.armor_class = atoi(cell);
+        printf("*** AC = %d\n",mon.armor_class);
+        
+        //----- CSVM_GRAPHIC_DIR -----
+        cell=&csv_line[offsets[CSVM_GRAPHIC_DIR]];
+        mon.option_graphic_dir = atoi(cell);
+        printf("*** GRAPHIC_DIR = %d\n",mon.option_graphic_dir);
+        
+        //----- CSVM_OPEN_DOORS -----
+        cell=&csv_line[offsets[CSVM_OPEN_DOORS]];
+        mon.option_open_doors = atoi(cell);
+        printf("*** OPEN_DOORS = %d\n",mon.option_open_doors);
+        
+        //----- CSVM_CLOSE_DOORS -----
+        cell=&csv_line[offsets[CSVM_CLOSE_DOORS]];
+        mon.option_close_doors = atoi(cell);
+        printf("*** CLOSE_DOORS = %d\n",mon.option_open_doors);
+        
+        //----- CSVM_QUANTITY -----
+        cell=&csv_line[offsets[CSVM_QUANTITY]];
+        mon.quantity = atoi(cell);
+        printf("*** QUANTITY = %d\n",mon.quantity);
+        
+        //------ other default valuess ------
+        mon.option_avoid_walls = 1;
+        
+        // clear the monster's working maps
+        for (int y=0; y<64; y++) {
+            for (int x=0; x<64; x++) {
+                mon.target_map[x][y] = 0;
+                mon.known_map[x][y] = 0;
+            }
+        }
+        
+        memcpy (&monsters[mnum],&mon,sizeof (struct monster_s));
+    }
+    fclose(file);
+    return (mnum);
+}
 
 void monster_create(int mnum) {
     monsters[mnum].name = "Mimic";
@@ -117,7 +297,17 @@ void monster_move(int mnum, int dir, float distance) {
         case 2: dy=  new_distance; break;
         case 3: dx= -new_distance; break;
     }
-    monsters[mnum].dir = dir;
+    
+    // turn in direction of motion if graphic supports it
+    if (monsters[mnum].option_graphic_dir==4) {
+        monsters[mnum].dir = dir; // turn any direction
+    } else if (monsters[mnum].option_graphic_dir==2) {
+        if (dir==1 || dir==3) { // only turn to left or right
+            monsters[mnum].dir = dir;
+        }
+    }
+    
+    // move
     monsters[mnum].x += dx;
     monsters[mnum].y += dy;
 
@@ -133,6 +323,7 @@ void monster_move(int mnum, int dir, float distance) {
 
 // same as player
 int monster_can_open(int mnum, float x, float y, int dir) {
+    // TODO: If monster cannot open doors, return 0.
     if (get_door(map.walls[ifloor(x)][ifloor(y)],dir)==0x10) {
         return 1;
     } else {
@@ -337,6 +528,7 @@ int monster_view_simple(int mnum) {
     int x,y,dir;
     unsigned char both_bits;
     int grew;
+    int range;
     int minx,maxx,miny,maxy;
     for (y=0;y<map.y_size;y++) {
         for (x=0;x<map.x_size;x++) {
@@ -350,8 +542,10 @@ int monster_view_simple(int mnum) {
     minx=x; maxx=x;
     miny=y; maxy=y;
     grew = 1;
-    while (grew) {  // loop stops when no more growth
+    range = 4;
+    while (grew && !range) {  // loop stops when no more growth
         grew = 0;
+        range--;
         for (y=miny;y<=maxy;y++) {
             for (x=minx;x<=maxx;x++) {
                 //printf("view simple %d,%d\n",x,y);
@@ -415,6 +609,7 @@ int player_visible_to_monster(int mnum) {
     return (monsters[mnum].known_map[x][y]>=1 && monsters[mnum].known_map[x][y]<255);
 }
 
+// TODO: Make this more realistic, not just jittering around.
 void monster_random_walk(int mnum) {
     int dir;
     monster_view_simple(mnum);

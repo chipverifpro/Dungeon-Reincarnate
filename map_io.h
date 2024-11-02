@@ -1,6 +1,9 @@
 // map_io.h
 
 // GLOBAL Variables
+extern char csv_num_cells; // count of valid CSV cells in below two variables
+extern char *csv_line;     // line read from csv file, modified to replace , with \0
+extern int offsets[200];   // indexes to modified csv_line for each cell
 
 // Function Prototypes
 extern int read_map_csv (int load_map_number); // Read map

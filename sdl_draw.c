@@ -1,25 +1,6 @@
 // sdl_gui.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-#include "dungeon.h"
-#include "items.h"
-#include "player.h"
-#include "sdl_time.h"
-#include "sdl_draw.h"
-#include "sdl_symbols.h"
-#include "map_io.h"
-#include "buttons.h"
-#include "user_input.h"
-#include "messages.h"
-#include "monster.h"
-*/
-
 //globals
 SDL_Window *window;       // SDL context
 SDL_Renderer *renderer;   // SDL context
@@ -970,11 +951,23 @@ int sdl_draw_monsters(float x_center, float y_center, int style) {
         if (monsters[z].valid==1
                 && monsters[z].map_number == map.map_number
                 && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]>0
-                && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]<255
-            ){
+                && map.visible[ifloor(monsters[z].x)][ifloor(monsters[z].y)]<255) {
+
+            // determine valid directions for monster based on option_graphic_dir
             if (monsters[z].graphic_type==1) {
-                dir =   monsters[z].dir;
-                if (monsters[z].option_graphic_dir==0) {dir=0;};
+                dir = monsters[z].dir;
+                if (monsters[z].option_graphic_dir==2) {
+                    if (dir == 3) {
+                        dir = -3;  //flip_horizontally
+                    } else {
+                        dir = 0;
+                    }
+                } else if (monsters[z].option_graphic_dir==0) {
+                    dir=0;
+                } else {    //
+                    dir =   monsters[z].dir;
+                }
+                printf("option = %d, dir=%d\n,",monsters[z].option_graphic_dir, dir);
                 draw_image(monsters[z].texture,
                         map_origin_x +monsters[z].x * sw_scale,
                         map_origin_y +monsters[z].y * sw_scale,

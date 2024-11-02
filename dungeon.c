@@ -1,20 +1,6 @@
 // dungeon.c
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include "main.h"
-#include "dungeon.h"
-#include "items.h"
-#include "player.h"
-#include "map_io.h"
-#include "sdl_draw.h"
-*/
-
 // GLOBAL variables
 
 // defined in dungeon.h

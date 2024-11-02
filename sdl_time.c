@@ -2,21 +2,6 @@
 
 #include "all_headers.h"
 
-/*
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#include "dungeon.h"
-#include "items.h"
-#include "sdl_time.h"
-#include "sdl_draw.h"
-#include "player.h"
-#include "main.h"
-#include "user_input.h"
-*/
-
 // GLOBAL variables
 int game_time = 0;
 int animation_time = 20; //ms

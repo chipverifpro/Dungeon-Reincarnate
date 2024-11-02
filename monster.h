@@ -19,7 +19,7 @@ struct monster_s {
     
     float   x;                // current location across map
     float   y;                // current location down map
-    float   dir;              // current direction
+    int     dir;              // current direction
     int     map_number;       // current map
     int     route_following;    //
     float   target_x;         // Target location for route planning
@@ -30,6 +30,7 @@ struct monster_s {
     int     damage;
     char   *weapon_name;
     int     armor_class;
+    int     quantity;
 
     unsigned char target_map[68][68]; // Distance map from route planning
     unsigned char known_map[68][68];  // visible and discovered area of current map
@@ -62,7 +63,9 @@ extern double dummyd; // temporary necessary for modf, unused value
 extern int imin(int a, int b);
 extern int imax(int a, int b);
 
-void monster_create(int mnum);
+extern int load_monsters(char *filename);
+extern void monster_create(int mnum);
+
 
 // called in main, map_io::read_map, user_input::handle_soft_ui_button_event
 extern void monster_move_to(int mnum, float x,float y, int dir);   // Initialize, or teleport

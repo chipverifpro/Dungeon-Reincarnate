@@ -232,7 +232,10 @@ int player_view_noback(void) {
     int view_cost;
     int max_view;
     int view_budget;
+    float max_radius;
+    
     max_view=get_view_distance();
+    max_radius=((float)max_view) *10.0 *0.7 / map.view_distance;
     for (y=0;y<map.y_size;y++) {
         for (x=0;x<map.x_size;x++) {
             if (map.visible[x][y]>0) map.visible[x][y]=255;
@@ -254,6 +257,9 @@ int player_view_noback(void) {
                 view_cost = get_view_cost_xy(x,y);
                 if (view_budget <=250 && view_budget >0) {
                     view_budget -= view_cost;
+                }
+                if (get_distance(x,y,pl.x,pl.y)>max_radius) {
+                    continue;
                 }
                 if (map.visible[x][y]>=1 && map.visible[x][y]<250 && view_budget>0) {
                     //printf("view noback %d,%d. view_budget=%d, view_cost=%d\n",x,y,view_budget, view_cost);

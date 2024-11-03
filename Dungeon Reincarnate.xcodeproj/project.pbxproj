@@ -400,6 +400,7 @@
 					/Users/markpontius/Desktop/Programming/C/SDL/sdl2_image/2.8.2_2/include/SDL2,
 					/Users/markpontius/Desktop/Programming/C/SDL/sdl2/2.30.7/include/SDL2,
 				);
+				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"\"-L/opt/homebrew/Cellar/sdl2/2.30.7/lib\"",

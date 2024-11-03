@@ -453,6 +453,9 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
     // do not check for known_space, as we can choose a target beyond.
     ymin = ymax = ifloor(route_to_y); // seed the search range, grows with seed
     xmin = xmax = ifloor(route_to_x);
+    if ((xmin < 0) || (ymin < 0) | (xmax >= map.x_size) || (ymax >= map.y_size)){
+        return 0;  // FAILURE: cannot seed outside map limits.
+    }
     monsters[mnum].target_map[xmin][ymin] = 0;   // seed map at target.
 
     // grow the map up to 50 iterations
@@ -470,7 +473,7 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
                     walls = map.walls[x][y];
                     // grow available routes
                     //if (get_wall(walls,0) == 0x00 && y>0 && distance_map[x][y-1]==0xff) {
-                    if (y>=0 && y<map.y_size
+                    if (y>=1
                                 && monsters[mnum].target_map[x][y-1]==0xff
                                 && (use_known_space && monsters[mnum].known_map[x][y-1]!=0)
                                 && ((get_wall(walls,0) == 0x00)
@@ -480,7 +483,7 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
                         grew++;
                     }
                     //if (get_wall(walls,1) == 0x00 && x<map.x_size && distance_map[x+1][y]==0xff) {
-                    if (x>=0 && x<map.x_size && y>=0 && y<map.y_size
+                    if (x<map.x_size-1
                                 && monsters[mnum].target_map[x+1][y]==0xff
                                 && (use_known_space && monsters[mnum].known_map[x+1][y]!=0)
                                 && ((get_wall(walls,1) == 0x00)
@@ -490,7 +493,7 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
                         grew++;
                     }
                     //if (get_wall(walls,2) == 0x00 && y<map.y_size && distance_map[x][y+1]==0xff) {
-                    if (x>=0 && x<map.x_size && y>=0 && y<map.y_size
+                    if (y<map.y_size-1
                                 && monsters[mnum].target_map[x][y+1]==0xff
                                 && (use_known_space && monsters[mnum].known_map[x][y+1]!=0)
                                 && ((get_wall(walls,2) == 0x00)
@@ -500,7 +503,7 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
                         grew++;
                     }
                     //if (get_wall(walls,3) == 0x00 && x>0 && distance_map[x-1][y]==0xff) {
-                    if (x>=0 && x<map.x_size && y>=0 && y<map.y_size
+                    if (x>=1
                                 && monsters[mnum].target_map[x-1][y]==0xff
                                 && (use_known_space && monsters[mnum].known_map[x-1][y]!=0)
                                 && ((get_wall(walls,3) == 0x00)
@@ -542,8 +545,8 @@ int monster_view_simple(int mnum) {
     minx=x; maxx=x;
     miny=y; maxy=y;
     grew = 1;
-    range = 4;
-    while (grew && !range) {  // loop stops when no more growth
+    range = 12;
+    while (grew && (range!=0)) {  // loop stops when no more growth
         grew = 0;
         range--;
         for (y=miny;y<=maxy;y++) {

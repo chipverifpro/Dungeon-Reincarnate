@@ -116,7 +116,7 @@ int draw_image (SDL_Texture *texture, int x,int y,int w,int h, int dir, int pane
 //    SDL_RenderCopy(renderer, texture, NULL, &dest_rect);
     SDL_Point t_size;
     SDL_QueryTexture(texture, NULL, NULL, &t_size.x, &t_size.y);
-
+    if (t_size.y==0) return 0; // texture is empty, prevent divide by zero.
     t_rects = (t_size.x / t_size.y);
     if (t_rects<1) t_rects=1; // image is taller than wide, only a single panel
     src_rect.h = t_size.y;

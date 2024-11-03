@@ -219,7 +219,7 @@ int plan_route(unsigned char distance_map[68][68], float route_to_x, float route
     unsigned char i;    // distance from original seed
     int grew;           // flag indicating we have grown this iteration
     unsigned int walls; // temporary variable
-
+    
     pl.target_x = route_to_x;
     pl.target_y = route_to_y;
     // clear the map
@@ -236,7 +236,6 @@ int plan_route(unsigned char distance_map[68][68], float route_to_x, float route
         return 0;  // FAILURE: cannot seed outside map limits.
     }
     distance_map[xmin][ymin] = 0;   // seed map at target.
-
     use_known_space = 0;
     // grow the map up to 50 iterations
     for (i=0;i<100;i++) {

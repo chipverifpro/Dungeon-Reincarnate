@@ -25,11 +25,90 @@ enum csv_fields {
         CSV_COMMENT     =19
 };
 
+enum csvl_fields {
+    CSVL_TYPE       =0,
+    CSVL_MAP        =1,
+    CSVL_X0         =2,
+    CSVL_Y0         =3,
+    CSVL_X1         =4,
+    CSVL_Y1         =5,
+    CSVL_ID         =6,
+    CSVL_NAME       =7,
+    CSVL_DESC       =8
+};
+
 // LOCAL GLOBAL Variables
 // global variables used by split_csv_line_offsets()
-char csv_num_cells; // count of valid CSV cells in below two variables
+int csv_num_cells;  // count of valid CSV cells in below two variables
 char *csv_line;     // line read from csv file, modified to replace , with \0
 int offsets[200];   // indexes to modified csv_line for each cell
+
+uint32_t **malloc_map_size_32 (int x, int y) {
+    uint32_t **arr_int;
+    // Allocate memory for the rows (array of pointers)
+    arr_int = (uint32_t **)malloc(x * sizeof(uint32_t *));
+    // Check if allocation was successful
+    if (arr_int == NULL) {
+        printf("Memory allocation failed!\n");
+        exit (-1);
+        return NULL;
+    } else {
+        //printf("Memory allocation succeeded for int* * columns=%d", x);
+    }
+    
+    // Allocate memory for each row (array of integers)
+    for (int xx = 0; xx < x; xx++) {
+        arr_int[xx] = (uint32_t*)malloc(y * sizeof(uint32_t));
+        if (arr_int[xx] == NULL) {
+            printf("Memory allocation failed for int * row %d!\n", xx);
+            exit (-1);
+            return (NULL);
+        } else {
+            //printf("Memory allocation success for int * row %d!\n", xx);
+        }
+    }
+    
+    // Initialize the array
+    for (int yy = 0; yy < y; yy++) {
+        for (int xx = 0; xx < x; xx++) {
+            arr_int[xx][yy] = 0;
+        }
+    }
+    return arr_int;
+}
+
+uint8_t **malloc_map_size_8 (int x, int y) {
+    uint8_t **arr_char;
+    // Allocate memory for the rows (array of pointers)
+    arr_char = (uint8_t **)malloc(x * sizeof(uint8_t *));
+    // Check if allocation was successful
+    if (arr_char == NULL) {
+        printf("Memory allocation failed!\n");
+        exit (-1);
+        return NULL;
+    } else {
+        //printf("Memory allocation succeeded for %d char* columns\n", x);
+    }
+    
+    // Allocate memory for each row (array of characters)
+    for (int xx = 0; xx < x; xx++) {
+        arr_char[xx] = (uint8_t*)malloc(y * sizeof(uint8_t));
+        if (arr_char[xx] == NULL) {
+            printf("Memory allocation failed for int * row %d!\n", xx);
+            exit (-1);
+            return (NULL);
+        } else {
+            //printf("Memory allocation success for int * row %d!\n", xx);
+        }
+    }
+    // Initialize the array
+    for (int yy = 0; yy < y; yy++) {
+        for (int xx = 0; xx < x; xx++) {
+            arr_char[xx][yy] = 0;
+        }
+    }
+    return arr_char;
+}
 
 // TODO: Complete this function
 struct object_s *find_uid_owner(int uid) {
@@ -37,6 +116,20 @@ struct object_s *find_uid_owner(int uid) {
     return (uid_owner);
 }
 
+SDL_Color color_intensity(SDL_Color src, int intensity_pct) {
+    uint32_t temp;
+    SDL_Color dest;
+    temp = (int)src.r * intensity_pct / 100;
+    if (temp > 255) temp=255;
+    dest.r = temp;
+    temp = (int)src.g * intensity_pct / 100;
+    if (temp > 255) temp=255;
+    dest.g = temp;
+    temp = (int)src.b * intensity_pct / 100;
+    if (temp > 255) temp=255;
+    dest.b = temp;
+    return(dest);
+}
 int read_map_csv (int load_map_number) {
     FILE *file;
     int x,y;    // current map location
@@ -45,15 +138,6 @@ int read_map_csv (int load_map_number) {
     int headers_done;
     int tnum;
 
-    // clear the map
-    for (y=0;y<64;y++) {
-        for(x=0;x<64;x++) {
-            map.walls[x][y] = 0;
-            map.valid[x][y] = 0;
-            map.visible[x][y] = 0;
-            //map.terrain[x][y] = 0; // part of walls now.
-        }
-    }
     map.view_distance = 100; // default
     
     snprintf(filename,100,"Maps/map%d.csv",load_map_number);
@@ -70,17 +154,17 @@ int read_map_csv (int load_map_number) {
     split_csv_line_offsets();
     if (strcmp(&csv_line[offsets[0]],"Map")!=0) {
         printf("Invalid map file %s.  Must begin with the word Map instead of %s\n",filename,&csv_line[offsets[0]]);
-//        exit(-1);
+        exit(-1);
     }
     map.map_number = atoi(&csv_line[offsets[1]]);
     map.map_name = str_alloc_copy(&csv_line[offsets[2]]);
     current_map_num = map.map_number;
     map.view_distance = atoi(&csv_line[offsets[3]]);
-    map.travel_distance = atoi(&csv_line[offsets[3]]);
+    map.travel_distance = atoi(&csv_line[offsets[4]]);
     if (map.view_distance == 0) map.view_distance = 100; // default value is 100%
     if (map.travel_distance == 0) map.travel_distance = 100; // default value is 100%
     // clear the terrains, ready to load new ones.
-    for (tnum=0;tnum<10;tnum++) {
+    for (tnum=0;tnum<16;tnum++) {
         map.terrains[tnum].wall_mode = map.terrains[tnum].floor_mode = map.terrains[tnum].door_mode = 0;
         map.terrains[tnum].NameT = NULL;
         map.terrains[tnum].wall_texture = map.terrains[tnum].floor_texture = map.terrains[tnum].door_open_texture = map.terrains[tnum].door_closed_texture = NULL;
@@ -98,7 +182,12 @@ int read_map_csv (int load_map_number) {
             map.x_size = atoi(&csv_line[offsets[1]]);
             map.y_size = atoi(&csv_line[offsets[2]]);
             printf(" Size = %d, %d\n", map.x_size, map.y_size);
-
+            map.walls  = (uint32_t **) malloc_map_size_32(map.x_size, map.y_size);
+            map.visible = (uint8_t **) malloc_map_size_8(map.x_size, map.y_size);
+            map.valid   = (uint8_t **) malloc_map_size_8(map.x_size, map.y_size);
+            if (pl.target_map != NULL) free(pl.target_map);
+            pl.target_map = (uint8_t **) malloc_map_size_8(map.x_size, map.y_size);
+            printf("map.walls = %p, map.visible = %p, map.valid = %p\n",map.walls, map.visible, map.valid);
         } else if (strcmp(&csv_line[offsets[0]],"Start")==0) {
             // starting location specified, only relevant on map 1, otherwise overridden
             map.start_x=atof(&csv_line[offsets[1]]);
@@ -169,8 +258,10 @@ int read_map_csv (int load_map_number) {
             map.terrains[tnum].c_floor.a = hex     & 0xFF;
             if (strlen(map.terrains[tnum].floor_fname)>1) {
                 map.terrains[tnum].floor_texture = load_symbol_texture(map.terrains[tnum].floor_fname, map.terrains[tnum].c_floor, map.terrains[tnum].floor_mode);
+                map.terrains[tnum].floor_texture_dark = load_symbol_texture(map.terrains[tnum].floor_fname, color_intensity(map.terrains[tnum].c_floor,50), map.terrains[tnum].floor_mode);
             } else {
                 map.terrains[tnum].floor_texture = NULL;
+                map.terrains[tnum].floor_texture_dark = NULL;
             }
             printf(" floor_mode = %d, floor_fname = %s, c_floor=%d,%d,%d,%d\n", map.terrains[tnum].floor_mode, map.terrains[tnum].floor_fname, map.terrains[tnum].c_floor.r, map.terrains[tnum].c_floor.g, map.terrains[tnum].c_floor.b, map.terrains[tnum].c_floor.a);
 
@@ -189,11 +280,15 @@ int read_map_csv (int load_map_number) {
     }
 
     // The rest of the file is cell data...
-    x=0; y=0;
+    if (map.walls==NULL) {
+        printf("map.walls[][] not allocated after headers read.  Is the map file missing a Size entry?\n");
+        exit (-1);
+    };
     for (y=0;csv_line!=NULL;y++) {
         csv_line = load_line(file);
-        if (csv_line==NULL) break;
-        chomp(csv_line);   
+        if (csv_line==NULL) continue;
+        if (y>=map.y_size) continue; // last of the expected rows
+        chomp(csv_line);
         //printf("Split the line\n");
         split_csv_line_offsets();
         //printf("reading map y=%d\n",y);
@@ -205,7 +300,12 @@ int read_map_csv (int load_map_number) {
             } else {
                 map.walls[x][y] = parse_hex(&csv_line[offsets[x+1]]);
                 map.valid[x][y] = 1;
-                //map.terrain[x][y] = (map.walls[x][y] >> 12) & 0xFF;
+                //map.terrain[x][y] = (map.walls[x][y] >> 16) & 0xFF;
+                // TEMPORARY TRANSLATE OLD POSITION TO NEW
+                //int terrain_temp = (map.walls[x][y] >> 12) & 0xF;
+                //printf("moving terrain %02X from %08X to ",terrain_temp, map.walls[x][y]);
+                //map.walls[x][y]=(map.walls[x][y] & 0x00000FFF) | (terrain_temp << 16);
+                //printf("%08X\n", map.walls[x][y]);
                 //if (map.terrain[x][y]!=0) printf("terrain[%d][%d]=%d\n",x,y,map.terrain[x][y]);
                 //printf("%2d,%2d %s=> %X\n",x,y,&csv_line[offsets[x+1]],map.valid[x][y]);
             }
@@ -214,14 +314,15 @@ int read_map_csv (int load_map_number) {
     };
     fclose(file);
     print_raw_map();
-    //exit(0);
+    
+    read_locations_csv("Maps/locations.csv");
     return (1);
 };
 
 // SDL_Color to Integer
 uint32_t ctoi (SDL_Color c) {
     uint32_t result;
-    result = (c.r<<24) | (c.g<<16) | (c.b<<8) | c.a;
+    result = (((uint32_t) c.r)<<24) | (c.g<<16) | (c.b<<8) | c.a;
     return(result);
 }
 
@@ -229,7 +330,15 @@ int write_map_csv (void) {
     FILE *file;
     int x,y; // current cell writing
     char filename[100];
-    snprintf(filename,100,"Maps/map%d.out.csv",map.map_number);
+    char bak_filename[100];
+    snprintf(bak_filename,100,"Maps/map%d.bak.csv",map.map_number);
+    snprintf(filename,100,"Maps/map%d.csv",map.map_number);
+    
+    if (rename(filename, bak_filename)==0) { // create a backup
+        printf("Renamed %s to %s\n",filename, bak_filename);
+    } else {
+        printf("Rename %s to %s failed\n",filename, bak_filename);
+    }
     file = fopen(filename, "w"); // Open the file in write mode
     if (file == NULL) {
         printf("Could not open file %s\n", filename);
@@ -239,7 +348,7 @@ int write_map_csv (void) {
     }
     
     // LINE 1: Map,1,Temple of Water
-    fprintf(file,"Map,%d,\"%s\",\n",map.map_number,map.map_name);
+    fprintf(file,"Map,%d,\"%s\",%d,%d,\n",map.map_number,map.map_name,map.view_distance,map.travel_distance);
     
     // LINE 2: Size,31,31
     fprintf(file,"Size,%d,%d,\n",map.x_size,map.y_size);
@@ -249,12 +358,13 @@ int write_map_csv (void) {
     }
     
     // LINES 3+: Up to 10 terrains, each with Name, Wall, Doors, and Floor colors and textures
-    for (int tnum=0;tnum<10;tnum++) {
+    for (int tnum=0;tnum<16;tnum++) {
         if (map.terrains[tnum].NameT!=NULL) {
             fprintf(file,"NameT[%d],\"%s\",\n",tnum,map.terrains[tnum].NameT);
             fprintf(file,"WallT[%d],%d,%08X,\"%s\",\n",tnum,map.terrains[tnum].wall_mode,ctoi(map.terrains[tnum].c_wall), map.terrains[tnum].wall_fname);
             fprintf(file,"DoorT[%d],%d,%08X,\"%s\",\"%s\",\n",tnum,map.terrains[tnum].door_mode,ctoi(map.terrains[tnum].c_door), map.terrains[tnum].door_open_fname, map.terrains[tnum].door_closed_fname);
             fprintf(file,"FloorT[%d],%d,%08X,\"%s\",\n",tnum,map.terrains[tnum].floor_mode,ctoi(map.terrains[tnum].c_floor), map.terrains[tnum].floor_fname);
+            fprintf(file,"CostT[%d],%d,%d,\n",tnum,map.terrains[tnum].view_cost,map.terrains[tnum].travel_cost);
         }
     }
     
@@ -272,7 +382,7 @@ int write_map_csv (void) {
             if (map.valid[x][y]==0) {
                 fprintf(file,",XXXX");
             } else {
-                fprintf(file,",%04X",map.walls[x][y]);
+                fprintf(file,",%06X",map.walls[x][y] & 0x00FFFFFF);
             };
         };
         fprintf(file,"\n");
@@ -284,16 +394,17 @@ int write_map_csv (void) {
 int read_objects_csv (char *filename) {
     FILE *file;
     char *cell;
+    int objects_count; // used for malloc'ing array of objects
     //char * line;
     //int uid_owner_num;
     //int owner_mapnumber;
     int owner_object_num;   // current spot relative to owner
     //struct object_s *owner; // list that will contain the object
     struct object_s obj; // current object being built
-    char **cells = malloc(sizeof(char*) * 50); // Ensure MAX_CELLS is defined
+    char **cells = malloc(sizeof(char*) * 100); // Ensure MAX_CELLS is defined
     if (cells == NULL) {
         printf("Memory allocation failed for cells\n");
-        return 1; // Handle error
+        exit (-1); // Handle error
     }
     //owner=objects;
     owner_object_num = 0;
@@ -304,8 +415,22 @@ int read_objects_csv (char *filename) {
     } else {
         printf("Opened file %s\n", filename);
     }
+    
+    // count objects and then allocate the array
+    objects_count = 0;
+    num_objects = 0;
+    csv_line = load_line(file);
+    while (csv_line!=NULL) {
+        if (csv_line[0]!='#') objects_count++;
+        csv_line = load_line(file);
+    }
+    objects = (struct object_s *)malloc(objects_count * sizeof(struct object_s));
+    printf("malloc of %d objects at %p\n",objects_count,objects);
+    rewind(file);
+    
+    // now fill that array with the objects
     csv_line = load_line(file); // throw away first line of comments
-    chomp(csv_line);   
+    chomp(csv_line);
     while (csv_line!=NULL) {
         //printf("loading line\n");
         csv_line = load_line(file);
@@ -321,8 +446,6 @@ int read_objects_csv (char *filename) {
         }
         // split the line
         //printf("Split the line\n");
-        //int num_cells = split_csv_line(line,cells,400);
-        //split_csv_line(line,cells,400);
         split_csv_line_offsets();
         //printf("num_cells %d\n",num_cells);
         //----- CSV_OWNER -----
@@ -382,6 +505,7 @@ int read_objects_csv (char *filename) {
         cell=&csv_line[offsets[CSV_GRAPHIC_NAME]];
         obj.graphic_name = str_alloc_copy(cell);
         obj.graphic_type = 0;
+        obj.texture = NULL;
         //printf("*** GRAPHIC_NAME = %s\n",obj.graphic_name);
 
         //----- CSV_MODE -----
@@ -439,7 +563,7 @@ int read_objects_csv (char *filename) {
                                         &obj.graphic_type);
 
         // add obj to container
-        //printf("owner[%d] at %p\n",owner_object_num, &owner[owner_object_num]);
+//        printf("owner[%d] at %p\n",owner_object_num, &owner[owner_object_num]);
         memcpy(&objects[owner_object_num],&obj,sizeof (struct object_s));
         //printf("memcpy complete\n");
         num_objects++;
@@ -618,9 +742,15 @@ void split_csv_line_offsets(void) {
             begun=0;
         }
     }
-    //for (j=0;j<csv_num_cells;j++) {
-        //printf("%d = >%s<\n",j,&csv_line[offsets[j]]);
-    //}
+    // find a convenient \0
+    for (i=0;i<strlen(csv_line);i++) {
+        if (csv_line[i]=='\0') break;
+    }
+    
+    // remainder of offsets list point to a \0
+    for (int k=csv_num_cells-1;k<=map.x_size;k++) {
+        offsets[k]=i;
+    }
 }
 
 // print_raw_map: display raw hex data for entire map
@@ -731,4 +861,240 @@ void print_detailed_object(struct object_s *obj) {
         printf("%4s -&- ",  obj->custom_data);
         printf("%1s ",      obj->comment);
         printf("\n");
+}
+
+int read_locations_csv (char *filename) {
+    FILE *file;
+    char *cell;
+    int locations_count; // used for malloc'ing array of objects
+    int cur_loc_num;   // current spot index into locations
+    int i;
+    
+    char loc_type;
+    int map_num;
+    int loc_x0, loc_y0;
+    int loc_x1, loc_y1;
+    
+    // TO_DO: replace 3 with locations...
+    //struct location_s *locations;
+    char *id;
+    char *name;
+    char *desc;
+    
+    uint8_t **seed_array;
+    uint32_t **id_array;
+    int x,y;
+    int grew;
+    int found_match;
+    
+    // alloc arrays
+    char **cells = malloc(sizeof(char*) * 100);  // one CSV line
+    if (cells == NULL) {
+        printf("Memory allocation failed for cells\n");
+        exit (-1); // Handle error
+    }
+    
+    //owner_object_num = 0;
+    file = fopen(filename, "r"); // Open the file in read mode
+    if (file == NULL) {
+        printf("Could not open file %s\n", filename);
+        return 1; // Exit if the file cannot be opened
+    } else {
+        printf("Opened file %s\n", filename);
+    }
+    
+    // count objects and then allocate the array
+    locations_count = 1;
+    cur_loc_num = 0;
+    csv_line = load_line(file);
+    while (csv_line!=NULL) {
+        split_csv_line_offsets();
+        cell=&csv_line[offsets[CSVL_MAP]];
+        map_num = atoi(cell);
+        // ok to skip the rest if not current map...
+        if (map_num == map.map_number) locations_count++;
+
+        csv_line = load_line(file);
+    }
+    
+    // allocate locations list (id/name/desc)
+    map.locations = (struct location_s *)malloc(locations_count * sizeof(struct location_s));
+    printf("malloc of %d locations at %p\n",locations_count,map.locations);
+    rewind(file);
+    
+    // allocate id and seed map arrays
+    seed_array = malloc_map_size_8(map.x_size, map.y_size);
+    id_array = malloc_map_size_32(map.x_size, map.y_size);
+    
+    map.num_locations = 1;
+    // now fill that array with the objects
+    csv_line = load_line(file); // throw away first line of comments
+    chomp(csv_line);
+    while (csv_line!=NULL) {
+        //printf("loading line\n");
+        csv_line = load_line(file);
+        //printf("done loading line ptr=%p\n",csv_line);
+        if (csv_line==NULL) break;
+        chomp(csv_line);
+        printf("read_locations_csv:%s\n",csv_line);
+        if(csv_line[0]=='#') {
+            //printf("comment: '%c'\n",csv_line[0]);
+            continue;  // skip comment lines
+        } else {
+            //printf("not comment: '%c'\n",csv_line[0]);
+        }
+        // split the line
+        //printf("Split the line\n");
+        split_csv_line_offsets();
+        //----- CSVL_TYPE -----
+        cell=&csv_line[offsets[CSVL_TYPE]];
+        loc_type = cell[0];
+        
+        //----- CSVL_MAP_NUM -----
+        cell=&csv_line[offsets[CSVL_MAP]];
+        map_num = atoi(cell);
+        // ok to skip the rest if not current map...
+        if (map_num != map.map_number) continue;
+        
+        //----- CSVL_X1 -----
+        cell=&csv_line[offsets[CSVL_X0]];
+        loc_x0 = atoi(cell);
+        
+        //----- CSVL_Y1 -----
+        cell=&csv_line[offsets[CSVL_Y0]];
+        loc_y0 = atoi(cell);
+        
+        //----- CSVL_X2 -----
+        cell=&csv_line[offsets[CSVL_X1]];
+        loc_x1 = atoi(cell);
+        
+        //----- CSVL_Y2 -----
+        cell=&csv_line[offsets[CSVL_Y1]];
+        loc_y1 = atoi(cell);
+        
+        //----- CSVL_ID -----
+        cell=&csv_line[offsets[CSVL_ID]];
+        id = str_alloc_copy(cell);
+        
+        //----- CSVL_NAME -----
+        cell=&csv_line[offsets[CSVL_NAME]];
+        name = str_alloc_copy(cell);
+        
+        //----- CSVL_DESC -----
+        cell=&csv_line[offsets[CSVL_DESC]];
+        desc = str_alloc_copy(cell);
+        
+        found_match = 0;
+        for (cur_loc_num = 1; cur_loc_num < map.num_locations; cur_loc_num++) {
+            if (strcmp(id,map.locations[cur_loc_num].id)==0) {
+                found_match=1;
+                break;
+            }
+        }
+        
+        if (found_match == 0) {
+            map.num_locations++;
+            map.locations[cur_loc_num].id = id;
+            map.locations[cur_loc_num].name = name;
+            map.locations[cur_loc_num].description = desc;
+        }
+        
+        // plant seed, point, or rectangle
+        if (loc_type=='S' || loc_type=='P') {
+            id_array [loc_x0][loc_y0] = cur_loc_num;
+            seed_array [loc_x0][loc_y0] = loc_type;
+        } else if (loc_type=='R') {
+            for (y=loc_y0;y<=loc_y1;y++) {
+                for (x=loc_x0;x<=loc_x1;x++) {
+                    id_array [x][y] = cur_loc_num;
+                    seed_array [x][y] = loc_type;
+                }
+            }
+        }
+    }
+
+    // grow seeds
+    grew=1;
+    for (i=0;(i<500);i++) {
+        if (grew==0) break;
+        grew=0;
+        for (y=0;y<map.y_size;y++) {
+            for (x=0;x<map.x_size;x++) {
+                if (seed_array[x][y]=='S') {
+                    if (y>0 && seed_array[x][y-1]==0 && (get_is_clear_xy(x,y,0)==0)) {
+                        id_array[x][y-1]=id_array[x][y];
+                        seed_array[x][y-1]=seed_array[x][y];
+                        grew=1;
+                        //printf("0 grew %c:%d at %d,%d\n",seed_array[x][y],id_array[x][y],x,y);
+                    }
+                    if (x<map.x_size-1 && seed_array[x+1][y]==0 && (get_is_clear_xy(x,y,1)==0)) {
+                        id_array[x+1][y]=id_array[x][y];
+                        seed_array[x+1][y]=seed_array[x][y];
+                        grew=1;
+                        //printf("1 grew %c:%d at %d,%d\n",seed_array[x][y],id_array[x][y],x,y);
+                    }
+                    if (y<map.y_size-1 && seed_array[x][y+1]==0 && (get_is_clear_xy(x,y,2)==0)) {
+                        id_array[x][y+1]=id_array[x][y];
+                        seed_array[x][y+1]=seed_array[x][y];
+                        grew=1;
+                        //printf("2 grew %c:%d at %d,%d\n",seed_array[x][y],id_array[x][y],x,y);
+                    }
+                    if (x>0 && seed_array[x-1][y]==0 && (get_is_clear_xy(x,y,3)==0)) {
+                        id_array[x-1][y]=id_array[x][y];
+                        seed_array[x-1][y]=seed_array[x][y];
+                        grew=1;
+                        //printf("3 grew %c:%d at %d,%d\n",seed_array[x][y],id_array[x][y],x,y);
+                    }
+                }
+            }
+        }
+    }
+    
+    printf("location seeds grew %d steps\n",i);
+    
+    
+    // copy id_array to map upper 8 bits
+    for (y=0;y<map.y_size;y++) {
+        for (x=0;x<map.x_size;x++) {
+            if (seed_array[x][y]==0) seed_array[x][y]=' ';
+            printf("%c",seed_array[x][y]);
+            map.walls[x][y] = (map.walls[x][y] & 0x00FFFFFF) + (id_array[x][y] << 24);
+        }
+        printf("\n");
+    }
+    
+    // free memory, done with these
+    free (id_array);
+    free (seed_array);
+    
+    printf("read_map_locations read %d locations for current map.\n",locations_count);
+    fclose(file);
+    map_consistancy_check();
+    return (1);
+}
+
+// for map debug use: check to see if any walls are one-sided.
+int map_consistancy_check (void) {
+    int num_problems = 0;
+    int x,y,dir;
+    int x2,y2;
+    printf("Map Consistancy Check:\n");
+    for (y=0;y<map.y_size;y++) {
+        for (x=0;x<map.x_size;x++) {
+            for (dir=0;dir<=3;dir++) {
+                x2 = get_x_in_dir (x,dir);
+                y2 = get_y_in_dir (y,dir);
+                if ((get_valid_xy(x,y)==0) || (get_valid_xy(x2,y2)==0)) continue;
+                if ((get_both_bits_xy(x,y,dir) != get_both_bits_xy(x2,y2,opposite(dir)))) {
+                    printf("Wall/Door Consistancy check mismatch at %d,%d,%d\n",x,y,dir);
+                    num_problems++;
+                }
+                if ((get_keepout_xy(x,y,dir) != get_keepout_xy(x2,y2,opposite(dir)))) {
+                    printf("Invis Wall Consistancy check mismatch at %d,%d,%d\n",x,y,dir);
+                    num_problems++;
+                }
+            }
+        }
+    }
+    return (num_problems);
 }

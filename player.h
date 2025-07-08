@@ -18,7 +18,7 @@ struct player_s {
     int     magic_points;
     char   *spell_name;
 
-    unsigned char target_map[68][68]; // Distance map from route planning
+    unsigned char **target_map; // Distance map from route planning
     // player's known_map is in the map_s structure
 
     int     route_following;    
@@ -63,8 +63,8 @@ extern int player_follow_route(void);
 extern float get_distance(float x1,float y1, float x2,float y2); // how far are two points from each other?
 //extern int player_get_item(float x, float y);          // Grab an item that is in reach
 
-extern void print_distancemap(unsigned char distance_map[68][68], int minx,int miny,int maxx,int maxy);
+extern void print_distancemap(unsigned char **distance_map, int minx,int miny,int maxx,int maxy);
 
 // called in user_input::handle_mouse_event
-extern int plan_route(unsigned char distance_map[68][68], float route_to_x, float route_to_y, int use_doors, int use_known_space);
+extern int plan_route(unsigned char **distance_map, float route_to_x, float route_to_y, int use_doors, int use_known_space, int use_big_seed);
 

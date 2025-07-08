@@ -1,8 +1,8 @@
-﻿#uid,x,y,dir,map,name,common_type,description,graphic_name,mode,color,size,valid,comment,custom_data,speed,HP,Damage,weapon_name,AC,graphic_dir,open_doors,close_doors,quantity
+#uid,x,y,dir,map,name,common_type,description,graphic_name,mode,color,size,valid,comment,custom_data,speed,HP,Damage,weapon_name,AC,graphic_dir,open_doors,close_doors,quantity
 1,10.5,10.5,3,1,Mimic,M,A hungry treasure chest,PNG/mimic-chest.png,2,8B4513FF,0.75,1,,,0.1,5,2,Teeth,8,2,0,0,1
 2,1.5,13.5,1,3,Blinky,G,A spritely red ghost,PNG/pacman-ghost-color.png,2,FF0000FF,0.75,1,Red,,0.03,10,1,Fright,6,2,0,0,1
 3,1.5,13.5,1,3,Pinky,G,A spritely pink ghost,PNG/pacman-ghost-color.png,2,FFC0CBFF,0.75,1,Pink,,0.04,10,1,Fright,6,2,0,0,1
 4,11.5,3.5,3,3,Inky,G,A spritely blue ghost,PNG/pacman-ghost-color.png,2,00BFFFFF,0.75,1,Light Blue,,0.05,8,1,Boo,6,2,0,0,1
 5,1.5,13.5,1,3,Clyde,G,A spritely orange ghost,PNG/pacman-ghost-color.png,2,FFA500FF,0.75,1,Orange,,0.06,10,1,Fright,6,2,0,0,1
 6,1.5,13.5,1,3,Sue,G,A spritely pruple ghost,PNG/pacman-ghost-color.png,2,800080FF,0.75,1,Purple,,0.07,10,1,Fright,6,2,0,0,1
-7,32.5,32.5,1,4,Dragon,D,A fearsome fire breathing dragon,PNG/dragon-ultima3-white.png,2,FFDF00FF,1,1,Gold,,0.1,20,4,Claw,4,2,0,0,1
+7,32.5,32.5,1,4,Dragon,D,A fearsome fire breathing dragon,PNG/dragon-ultima3-white.png,2,FFDF00FF,2q,1,Gold,,0.1,20,4,Claw,4,2,0,0,1

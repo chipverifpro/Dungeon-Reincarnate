@@ -201,9 +201,9 @@ int player_follow_route(void) {
 }
 
 
-//unsigned char distance_map[68][68];
+//unsigned char **distance_map;
 
-void print_distancemap(unsigned char distance_map[68][68], int minx,int miny,int maxx,int maxy) {
+void print_distancemap(unsigned char **distance_map, int minx,int miny,int maxx,int maxy) {
     int x,y;
     for (y=miny;y<=maxy;y++) {
         for (x=minx;x<=maxx;x++) {
@@ -213,7 +213,7 @@ void print_distancemap(unsigned char distance_map[68][68], int minx,int miny,int
     }
 }
 
-int plan_route(unsigned char distance_map[68][68], float route_to_x, float route_to_y, int use_doors, int use_known_space) {
+int plan_route(unsigned char **distance_map, float route_to_x, float route_to_y, int use_doors, int use_known_space, int use_big_seed) {
     int x, y;           // current search point
     int ymin, ymax, xmin, xmax; // constrain the seed search area
     unsigned char i;    // distance from original seed
@@ -236,8 +236,14 @@ int plan_route(unsigned char distance_map[68][68], float route_to_x, float route
         return 0;  // FAILURE: cannot seed outside map limits.
     }
     distance_map[xmin][ymin] = 0;   // seed map at target.
+    if (use_big_seed) {
+        if (xmin>0) {distance_map[xmin-1][ymin] = 0;xmin--;}
+        if (ymin>0) {distance_map[xmax][ymin-1] = 0;ymin--;}
+        if (xmax<map.x_size-1) {distance_map[xmax+1][ymax] = 0;xmax++;}
+        if (xmin<map.y_size-1) {distance_map[ifloor(route_to_x)][ymax+1] = 0;ymax++;}
+    }
     use_known_space = 0;
-    // grow the map up to 50 iterations
+    // grow the map up to 100 iterations
     for (i=0;i<100;i++) {
         //printf("begin iteration %d with min=%d,%d and max=%d,%d(grew=%d)\n",i,xmin,ymin,xmax,ymax,grew);
         grew = 0;   // grow until reach current position, or no more growth.
@@ -302,6 +308,10 @@ int plan_route(unsigned char distance_map[68][68], float route_to_x, float route
         if (grew==0) {
             printf("Route cannot grow after %d steps\n",i);
             print_distancemap(distance_map,xmin,ymin,xmax,ymax);
+            if (use_big_seed==0) {
+                printf("Try again with big seed\n");
+                return (plan_route(distance_map, route_to_x, route_to_y, use_doors, use_known_space, 1));
+            }
             break;
         }
     }

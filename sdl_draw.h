@@ -14,7 +14,7 @@ extern int mode_inventory;  // shift is held down
 extern SDL_Window *window;     // for global graphics context
 extern SDL_Renderer *renderer; // for global graphics context
 extern SDL_Event event;        // current keyboard/mouse event
-extern SDL_Texture *walls_texture[10];
+extern SDL_Texture *walls_texture[16];
 extern int num_walls_texture;
 extern SDL_Texture *texture;   // NOT the screen, but a separate drawing target.
 

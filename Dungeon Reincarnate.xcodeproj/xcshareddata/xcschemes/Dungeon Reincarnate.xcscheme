@@ -48,7 +48,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       enableGPUShaderValidationMode = "2"
-      showGraphicsOverview = "Yes"
       allowLocationSimulation = "YES"
       viewDebuggingEnabled = "No">
       <BuildableProductRunnable

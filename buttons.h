@@ -15,7 +15,7 @@ struct button_s {
 // gloval variables
 extern TTF_Font *font;
 
-extern struct button_s button_list[100]; // list of buttons
+extern struct button_s button_list[200]; // list of buttons
 extern int num_buttons;                 // number of buttons
 
 // LOCAL Globals
@@ -60,3 +60,4 @@ extern int arrange_and_draw_UpperLeft_buttons(void);    // arrange and draw all 
 extern int arrange_and_draw_buttons(void);        // arrange and draw all buttons
   extern int draw_one_button(int button_num);     // render a single button
 
+extern int display_location(void);

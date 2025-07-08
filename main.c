@@ -39,6 +39,8 @@ int main(int argc, char *argv[]) {
     init_battle_arena();
     read_map_csv(1);
     printf("read_map_csv (Map number %d) complete: map is %d,%d\n",map.map_number,map.x_size,map.y_size);
+    snprintf(buf,150,"Dungeon Reincarnate - %s",map.map_name);
+    SDL_SetWindowTitle(window, buf);
     read_objects_csv(obj_filename);
     printf("read_objects_csv \"%s\" complete: num_objects = %d\n",obj_filename,num_objects);
 

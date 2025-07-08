@@ -32,8 +32,8 @@ struct monster_s {
     int     armor_class;
     int     quantity;
 
-    unsigned char target_map[68][68]; // Distance map from route planning
-    unsigned char known_map[68][68];  // visible and discovered area of current map
+    unsigned char **target_map; // Distance map from route planning
+    unsigned char **known_map;  // visible and discovered area of current map
 
     int     option_open_doors;  // will auto-open a door if you try to walk through it
     int     option_close_doors; // will auto-close a door after you walk through it

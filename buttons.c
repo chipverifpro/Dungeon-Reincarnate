@@ -4,7 +4,7 @@
 // Global Variables
 TTF_Font *font;
 
-struct button_s button_list[100]; // list of buttons
+struct button_s button_list[200]; // list of buttons
 int num_buttons=0;               // number of buttons in list
 
 // Local Globals
@@ -282,7 +282,6 @@ int display_buttons_for_objects (void) {
             if ((distance < objects[o].size)
                    && (objects[o].owner_num==map.map_number)
                    && (objects[o].owner=='M')) {
-                //printf("You see: %s\n",objects[o].description);
                 snprintf(buf,200,"You see: %s",objects[o].description);
                 printf("%s\n",buf);
                 message_create(buf,objects[o].uid);
@@ -300,6 +299,18 @@ int display_buttons_for_objects (void) {
         }
         // TODO: Manage buttons for objects
     }
+    display_location();
     return (1);
 }
 
+int display_location(void) {
+    int location_num;
+    char buf[100];
+    location_num = (map.walls[ifloor(pl.x)][ifloor(pl.y)] & 0xFF000000) >> 24;
+    
+    if (location_num !=0) {
+        snprintf(buf, 100, "%s: %s", map.locations[location_num].id, map.locations[location_num].name);
+        printf("You are at: %s\n",buf);
+    }
+    return (1);
+}

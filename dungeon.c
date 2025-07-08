@@ -7,44 +7,60 @@
 struct map_s map;
 struct map_s maps[10];
 int valid_maps[10];
-struct object_s objects[50];
+struct object_s *objects;
 int num_objects;
 int current_map_num;    // assigned on load
 
 //get whether wall present in dir
+// called by monster::monster_plan_route and monster_follow_route
 int get_wall(int number, int dir) {
     return (number >> dir) & 0x01;
 }
 
+// called by player::player_follow_route()
 int get_wall_xy(float x, float y, int dir) {
     return ((map.walls[ifloor(x)][ifloor(y)]>>dir) & 0x01);
 }
 
 //get whether door present in dir
+// called by monster::monster_plan_route, and player::plan_route
 int get_door(int number, int dir) {
     return (number >> dir) & 0x10;
 }
 
+// unused
 int get_door_xy(float x, float y, int dir) {
     return ((map.walls[ifloor(x)][ifloor(y)]>>dir) & 0x10);
 }
 
 // invisible wall in dir
+// unused
 int get_keepout(int number, int dir) {
     return (number >> dir) & 0x100;
 }
 
+// unused
 int get_keepout_xy(float x, float y, int dir) {
     return ((map.walls[ifloor(x)][ifloor(y)]>>dir) & 0x100);
 }
 
 //get whether door and wall present in dir (two hex nibbles)
+// called by monster::monster_view_simple, and sdl_draw::draw_shadows
 int get_both_bits(int number, int dir) {
     return (number >> dir) & 0x11;
 }
 
+// called by player_view_noback, and sdl_draw::sdl_draw_map
 int get_both_bits_xy(float x, float y, int dir) {
     return ((map.walls[ifloor(x)][ifloor(y)]>>dir) & 0x11);
+}
+
+//NEW equivalent to get both bits, but invisible + wall = see through
+int view_in_dir_xy(float x, float y, int dir) {
+    int retval;
+    retval = get_both_bits_xy(x,y,dir);
+    retval = retval & (1-(get_keepout_xy(x,y,dir) >> 8));
+    return (retval);
 }
 
 // Toggles wall, and sets opposite side to match.
@@ -62,7 +78,9 @@ int toggle_wall_xy(float x, float y, int dir, int offset) {
         case 3:  x--; break;
     }
     dir = opposite(dir);
-    if ((map.walls[ifloor(x)][ifloor(y)] >> (dir + offset) & 0x01) == origbit) {
+    if (x<0 || x>map.x_size-1 || y<0 || y>map.y_size-1) {
+        printf("Not toggling opposite side off edge of map\n");
+    } else if ((map.walls[ifloor(x)][ifloor(y)] >> (dir + offset) & 0x01) == origbit) {
         map.walls[ifloor(x)][ifloor(y)] ^= (1 << (dir + offset));
         printf("Toggling opposite side\n");
     } else {
@@ -71,10 +89,12 @@ int toggle_wall_xy(float x, float y, int dir, int offset) {
     return (1-origbit);
 }
 
+// unused
 //int get_any_wall(int number, int dir) {
 //    return ((number >> dir) | (number >> (dir+8))) & 0x01;
 //}
 
+// called by player::plan_route, player_can_move, and monster_can_move
 int get_any_wall_xy(float x, float y, int dir) {
     uint32_t number;
     int result;
@@ -90,14 +110,14 @@ int get_any_wall_xy(float x, float y, int dir) {
             }
             break;
         case 1:  
-            if (x>=map.x_size-1) {
+            if (ifloor(x)>=map.x_size-1) {
                 number = 0xf;
             } else {
                 number = map.walls[ifloor(x+1)][ifloor(y)];
             }
             break;
         case 2:
-            if (y>=map.y_size-1) {
+            if (ifloor(y)>=map.y_size-1) {
                 number = 0xf;
             } else {
                 number = map.walls[ifloor(x)][ifloor(y+1)];
@@ -106,7 +126,7 @@ int get_any_wall_xy(float x, float y, int dir) {
         case 3:
             if (ifloor(x)<=0) {
                 number = 0xf;
-            }else {
+            } else {
                 number = map.walls[ifloor(x-1)][ifloor(y)];
             }
             break;
@@ -114,6 +134,30 @@ int get_any_wall_xy(float x, float y, int dir) {
     dir = opposite(dir);
     result |= ((number >> dir) | (number >> (dir+8))) & 0x01;
     return (result);
+}
+
+int get_is_clear_xy(float x, float y, int dir) {
+    return (get_door_xy(x,y,dir) || get_any_wall_xy(x,y,dir));
+}
+
+// get x location if you move in direction.
+int get_x_in_dir(int x, int dir) {
+    if (dir==1) return(x+1);
+    if (dir==3) return(x-1);
+    return(x);
+}
+
+// get y location if you move in direction.
+int get_y_in_dir(int y, int dir) {
+    if (dir==2) return(y+1);
+    if (dir==0) return(y-1);
+    return(y);
+}
+
+// range check and return valid for a location.
+int get_valid_xy(int x, int y) {
+    if (x<0 || y<0 || x>map.x_size-1 || y>map.y_size-1) return 0;
+    return (map.valid[x][y]);
 }
 
 //get the opposite of dir (0->2, 1->3, 2->0, 3->1)
@@ -136,72 +180,9 @@ float dir_to_degrees (int dir) {
     return (90.0 * dir);
 }
 
-// most primitive view algorithm, grows a seed in any direction exposing
-// entire room/passages not blocked by walls or closed doors.
-int player_view_simple(void) {
-    //result goes into global: unsigned char map.visible[64][64];
-    int x,y,dir;
-    unsigned char both_bits;
-    int grew;
-    int minx,maxx,miny,maxy;
-    for (y=0;y<map.y_size;y++) {
-        for (x=0;x<map.x_size;x++) {
-            if (map.visible[x][y]==1) map.visible[x][y]=2;
-        };
-    };
-    // seed view at player position, ok to be in unknown map area (like behind a door).
-    x = ifloor(pl.x);
-    y = ifloor(pl.y);
-    map.visible[x][y]=1;
-    minx=x; maxx=x;
-    miny=y; maxy=y;
-    grew = 1;
-    while (grew) {  // loop stops when no more growth
-        grew = 0;
-        for (y=miny;y<=maxy;y++) {
-            for (x=minx;x<=maxx;x++) {
-                //printf("view simple %d,%d\n",x,y);
-                if (map.visible[x][y]==1) {
-                    for (dir=0;dir<=3;dir++) {
-                        both_bits = get_both_bits(map.walls[x][y],dir);
-                        if (both_bits == 0x00 || both_bits == 0x10) {
-                            switch (dir) {
-                            case 0: if(y>0 && map.visible[x][y-1]!=1) {
-                                        map.visible[x][y-1]=1;
-                                        miny=imin(miny,y-1);
-                                        grew=1;
-                                    }
-                                    break;
-                            case 1: if(x<map.x_size-1 && map.visible[x+1][y]!=1) { 
-                                        map.visible[x+1][y]=1;
-                                        maxx=imax(maxx,x+1);
-                                        grew=1;
-                                    }
-                                    break;
-                            case 2: if(y<map.y_size-1 && map.visible[x][y+1]!=1) { 
-                                        map.visible[x][y+1]=1;
-                                        maxy=imax(maxy,y+1);
-                                        grew=1;
-                                    }
-                                    break;
-                            case 3: if(x>0 && map.visible[x-1][y]!=1) {
-                                        map.visible[x-1][y]=1;
-                                        minx=imin(minx,x-1);
-                                        grew=1;
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return 1;
-}
-
 int get_terrain_xy(int x, int y) {
-    return((map.walls[x][y] >> 12) & 0xF);
+    if (x>map.x_size || y>map.y_size) return 0;
+    return((map.walls[x][y] >> 16) & 0xFF);
 }
 
 int get_view_cost_xy(int x, int y) {
@@ -264,7 +245,7 @@ int player_view_noback(void) {
                 if (map.visible[x][y]>=1 && map.visible[x][y]<250 && view_budget>0) {
                     //printf("view noback %d,%d. view_budget=%d, view_cost=%d\n",x,y,view_budget, view_cost);
                     for (dir=0;dir<=3;dir++) {
-                        both_bits = get_both_bits_xy(x,y,dir);
+                        both_bits = view_in_dir_xy(x,y,dir);
                         if (dir==0 && y>iply) both_bits=-1;
                         if (dir==1 && x<iplx) both_bits=-1;
                         if (dir==2 && y<iply) both_bits=-1;
@@ -314,4 +295,24 @@ int player_view_noback(void) {
 //        printf("\n");
 //    };
     return 1;
+}
+
+void reveal_all_map(void) {
+    int x,y;
+    for (y=0;y<map.y_size;y++) {
+        for (x=0;x<map.x_size;x++) {
+            map.visible[x][y] = 1;
+        }
+    }
+    dirty_display=1;
+}
+
+void lose_map(void) {
+    int x,y;
+    for (y=0;y<map.y_size;y++) {
+        for (x=0;x<map.x_size;x++) {
+            map.visible[x][y] = 0;
+        }
+    }
+    dirty_display=1;
 }

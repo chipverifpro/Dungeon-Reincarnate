@@ -189,12 +189,15 @@ int load_monsters(char *filename) {
         mon.option_avoid_walls = 1;
         
         // clear the monster's working maps
-        for (int y=0; y<64; y++) {
-            for (int x=0; x<64; x++) {
-                mon.target_map[x][y] = 0;
-                mon.known_map[x][y] = 0;
-            }
-        }
+        mon.target_map = NULL;
+        mon.known_map = NULL;
+        //WAIT: allocate and clear this when map is loaded
+        //for (int y=0; y<map.y_size; y++) {
+        //    for (int x=0; x<map.x_size; x++) {
+        //        mon.target_map[x][y] = 0;
+        //        mon.known_map[x][y] = 0;
+        //    }
+        //}
         
         memcpy (&monsters[mnum],&mon,sizeof (struct monster_s));
     }
@@ -233,12 +236,15 @@ void monster_create(int mnum) {
     monsters[mnum].weapon_name = "Teeth";
     monsters[mnum].armor_class = 8;
 
-    for (int y=0; y<64; y++) {         // clear the monster's working maps
-        for (int x=0; x<64; x++) {
-            monsters[mnum].target_map[x][y] = 0;
-            monsters[mnum].known_map[x][y] = 0;
-        }
-    }
+    monsters[mnum].target_map = NULL;
+    monsters[mnum].known_map = NULL;
+    //WAIT: allocate and clear this when map is loaded
+    //for (int y=0; y<map.y_size; y++) {         // clear the monster's working maps
+    //    for (int x=0; x<map.x_size; x++) {
+    //        monsters[mnum].target_map[x][y] = 0;
+    //        monsters[mnum].known_map[x][y] = 0;
+    //    }
+    //}
 
     monsters[mnum].option_open_doors=0;  // 1 = will auto-open a door if you try to walk through it.
     monsters[mnum].option_close_doors=0; // 1 = will auto-close a door after you walk through it.
@@ -440,7 +446,7 @@ int monster_plan_route(int mnum, float route_to_x, float route_to_y, int use_doo
     unsigned char i;    // distance from original seed
     int grew;           // flag indicating we have grown this iteration
     unsigned char walls; // temporary variable
-
+    
     monsters[mnum].target_x = route_to_x;
     monsters[mnum].target_y = route_to_y;
     // clear the map
@@ -533,6 +539,13 @@ int monster_view_simple(int mnum) {
     int grew;
     int range;
     int minx,maxx,miny,maxy;
+    
+    // First use, allocate the monster's map...
+    if (monsters[mnum].target_map == NULL) {
+        monsters[mnum].target_map = malloc_map_size_8(map.x_size, map.y_size);
+        monsters[mnum].known_map = malloc_map_size_8(map.x_size, map.y_size);
+    }
+    // clear the map
     for (y=0;y<map.y_size;y++) {
         for (x=0;x<map.x_size;x++) {
             if (monsters[mnum].known_map[x][y]==1) monsters[mnum].known_map[x][y]=2;

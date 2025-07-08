@@ -55,8 +55,10 @@ int handle_user_event(SDL_Event event) {
 int handle_keyboard_event(SDL_Event event) {
     int inum;
     int tnum;
+    int dest_map;
     char buf[200];
     float step_size;
+    static int last_tnum, last_tnum_x, last_tnum_y;
     //int button_num;
     num_events_keyboard++;
     switch (event.type) {
@@ -110,19 +112,73 @@ int handle_keyboard_event(SDL_Event event) {
                                 map.valid[ifloor(pl.x)][ifloor(pl.y)] ^= 0x1;
                                 dirty_display = 1;
                                 break;
-                case SDLK_t:    tnum = map.walls[ifloor(pl.x)][ifloor(pl.y)] >> 12 & 0x0F;
-                                tnum ++;
+                case SDLK_t:    tnum = map.walls[ifloor(pl.x)][ifloor(pl.y)] >> 16 & 0xFF;
+                                if (last_tnum_x == ifloor(pl.x) && last_tnum_y == ifloor(pl.y)) {
+                                    tnum ++;
+                                } else {
+                                    tnum = last_tnum;
+                                }
                                 if (map.terrains[tnum].NameT==NULL || strlen(map.terrains[tnum].NameT) <2) {
                                     tnum=0;
                                 }
                                 //printf("Terrain = %d\n",tnum);
                                 map.walls[ifloor(pl.x)][ifloor(pl.y)] &= 0x0FFF;
-                                map.walls[ifloor(pl.x)][ifloor(pl.y)] += tnum<<12;
+                                map.walls[ifloor(pl.x)][ifloor(pl.y)] += tnum<<16;
+                                last_tnum = tnum;
+                                last_tnum_x = ifloor(pl.x);
+                                last_tnum_y = ifloor(pl.y);
                                 dirty_display = 1;
                                 break;
                 case SDLK_SPACE: pl.route_following = 1;
                                 pl.route_following = player_follow_route();
                                 dirty_display = 1;
+                                break;
+                case SDLK_m:    reveal_all_map();
+                                dirty_display = 1;
+                                break;
+                case SDLK_n:    lose_map();
+                                dirty_display = 1;
+                                break;
+                case SDLK_r:    num_objects = 0;
+                                read_objects_csv("Maps/objects.csv");
+                                load_textures();
+                                read_map_csv(map.map_number);
+                                printf("Reread of objects.csv and map%d.csv\n",map.map_number);
+                                dirty_display = 1;
+                                break;
+                case SDLK_COMMA:  dest_map=current_map_num-1;
+                                if (dest_map<5) dest_map=5;
+                                memcpy(&maps[current_map_num],&map,sizeof(struct map_s));
+                                valid_maps[current_map_num]=1;
+                                if (valid_maps[dest_map]==1) {
+                                    memcpy(&map,&maps[dest_map],sizeof(struct map_s));
+                                    current_map_num = dest_map;
+                                } else {
+                                    read_map_csv(dest_map);
+                                }
+                                dirty_display = 7;
+                                snprintf(buf,200,"You climbed imagingary stairs to %s",map.map_name);
+                                printf("%s\n",buf);
+                                message_create(buf,0);
+                                snprintf(buf,200,"Dungeon Reincarnate - %s",map.map_name);
+                                SDL_SetWindowTitle(window, buf);
+                                break;
+                case SDLK_PERIOD:  dest_map=current_map_num+1;
+                                if (dest_map>7) dest_map=7; // TODO: Hard coded is bad.
+                                memcpy(&maps[current_map_num],&map,sizeof(struct map_s));
+                                valid_maps[current_map_num]=1;
+                                if (valid_maps[dest_map]==1) {
+                                    memcpy(&map,&maps[dest_map],sizeof(struct map_s));
+                                    current_map_num = dest_map;
+                                } else {
+                                    read_map_csv(dest_map);
+                                }
+                                dirty_display = 7;
+                                snprintf(buf,200,"You climbed imagingary stairs to %s",map.map_name);
+                                printf("%s\n",buf);
+                                message_create(buf,0);
+                                snprintf(buf,200,"Dungeon Reincarnate - %s",map.map_name);
+                                SDL_SetWindowTitle(window, buf);
                                 break;
                 //case SDLK_i:    print_player_inventory();
                 //                break;
@@ -141,7 +197,7 @@ int handle_keyboard_event(SDL_Event event) {
     }
     if (status == running && event.type==SDL_KEYDOWN) {
         step_size = pl.step_size * map.travel_distance * map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost / 10000;
-        printf("pl.step_size = %f, map.travel_distance = %d/100, terrain.travel_cost = %5d/100\n",pl.step_size,map.travel_distance,map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost);
+        //printf("pl.step_size = %f, map.travel_distance = %d/100, terrain.travel_cost = %5d/100\n",pl.step_size,map.travel_distance,map.terrains[get_terrain_xy(pl.x,pl.y)].travel_cost);
 
         switch (event.key.keysym.sym) {
             case SDLK_UP:    num_events_player_step++; pl.route_following = 0; player_move(0,step_size); dirty_display = 1; break;
@@ -178,10 +234,6 @@ int handle_keyboard_event(SDL_Event event) {
             case SDLK_RIGHT: toggle_wall_xy(pl.x,pl.y,1,0); status=running; dirty_display = 1; break;
             case SDLK_DOWN:  toggle_wall_xy(pl.x,pl.y,2,0); status=running; dirty_display = 1; break;
             case SDLK_LEFT:  toggle_wall_xy(pl.x,pl.y,3,0); status=running; dirty_display = 1; break;
-            //case SDLK_UP:    map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<0); status=running; dirty_display = 1; break;
-            //case SDLK_RIGHT: map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<1); status=running; dirty_display = 1; break;
-            //case SDLK_DOWN:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<2); status=running; dirty_display = 1; break;
-            //case SDLK_LEFT:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<3); status=running; dirty_display = 1; break;
         }
     } else if (status == door) { // map editor feature
         switch (event.key.keysym.sym) {
@@ -189,10 +241,6 @@ int handle_keyboard_event(SDL_Event event) {
             case SDLK_RIGHT: toggle_wall_xy(pl.x,pl.y,1,4); status=running; dirty_display = 1; break;
             case SDLK_DOWN:  toggle_wall_xy(pl.x,pl.y,2,4); status=running; dirty_display = 1; break;
             case SDLK_LEFT:  toggle_wall_xy(pl.x,pl.y,3,4); status=running; dirty_display = 1; break;
-            //case SDLK_UP:    map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<4); status=running; dirty_display = 1; break;
-            //case SDLK_RIGHT: map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<5); status=running; dirty_display = 1; break;
-            //case SDLK_DOWN:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<6); status=running; dirty_display = 1; break;
-            //case SDLK_LEFT:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<7); status=running; dirty_display = 1; break;
         }
     } else if (status == invisible_wall) { // map editor feature
         switch (event.key.keysym.sym) {
@@ -200,10 +248,6 @@ int handle_keyboard_event(SDL_Event event) {
             case SDLK_RIGHT: toggle_wall_xy(pl.x,pl.y,1,8); status=running; dirty_display = 1; break;
             case SDLK_DOWN:  toggle_wall_xy(pl.x,pl.y,2,8); status=running; dirty_display = 1; break;
             case SDLK_LEFT:  toggle_wall_xy(pl.x,pl.y,3,8); status=running; dirty_display = 1; break;
-            //case SDLK_UP:    map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<8); status=running; dirty_display = 1; break;
-            //case SDLK_RIGHT: map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<9); status=running; dirty_display = 1; break;
-            //case SDLK_DOWN:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<10); status=running; dirty_display = 1; break;
-            //case SDLK_LEFT:  map.walls[ifloor(pl.x)][ifloor(pl.y)] ^= (1<<11); status=running; dirty_display = 1; break;
         }
     } else if (status == battle && event.type==SDL_KEYDOWN) { // in battle mode
         switch (event.key.keysym.sym) {
@@ -269,6 +313,8 @@ int handle_soft_ui_button_event(int button_num) {
                         snprintf(buf,200,"You climbed the %s to %s",objects[obj].description, map.map_name);
                         printf("%s\n",buf);
                         message_create(buf,uid);
+                        snprintf(buf,200,"Dungeon Reincarnate - %s",map.map_name);
+                        SDL_SetWindowTitle(window, buf);
                     } else {
                         snprintf(buf,200,"Climb the stairs: The %s are closed for construction.",objects[obj].description);
                         printf("%s\n",buf);
@@ -321,7 +367,7 @@ int handle_mouse_event(SDL_Event event) {
             struct F_Point_s target = convert_scr_to_map(event.button.x, event.button.y);
             pl.target_x = event.button.x;
             pl.target_y = event.button.y;
-            int success = plan_route(pl.target_map, target.x,target.y,pl.option_open_doors,1);
+            int success = plan_route(pl.target_map, target.x,target.y,pl.option_open_doors,1,0);
             if (success) {
                 printf("plan_route() returned SUCCESS\n");
                 pl.route_following = 1;

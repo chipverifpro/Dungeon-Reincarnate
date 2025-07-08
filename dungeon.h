@@ -94,10 +94,20 @@ struct terrain_s {
     int floor_mode;
     char *floor_fname;
     SDL_Texture *floor_texture;
+    SDL_Texture *floor_texture_dark;
     SDL_Color c_floor;    // floor color (when visible)
     
     int view_cost;        // limits how far can be seen
     int travel_cost;      // limits how far can be seen
+};
+
+struct location_s {
+    char *id;
+//    char type;            // location as shown on a map (eg. 1A), place in parenthesis to not display on map
+//    int x0, y0;           // location on map to put label (?TBD?), also need font size...
+//    int x1, y1;           // location on map to put label (?TBD?), also need font size...
+    char *name;           // room title (eg. "Long Hallway")
+    char *description;    // room details (eg. "Dimly lit hallway with a steady stiff breeze from the North.")
 };
 
 // everything to know about the map
@@ -106,8 +116,12 @@ struct map_s {
     int  map_number;      // 'floor' number foor this map
     char *map_name;       // name for display (Crypt of Bob)
 
-    struct terrain_s terrains[10];
+    struct terrain_s terrains[16];  //TODO: Dynamically allocate
+    int num_terrains;     // TODO
 
+    struct location_s *locations;   // list of room descriptions
+    int num_locations;              // length of allocated list
+    
     int view_distance;    // how far to see on this map
     int travel_distance;  // how far to move per step on this map
     SDL_Color c_fog;      // fog modifier for known areas of map
@@ -120,17 +134,20 @@ struct map_s {
     float start_y;          //
     int   start_dir;        //
 
-    u_int32_t walls[68][68];    // walls and doors and invisible walls in bitmap format, per tile.
+    u_int32_t **walls;    // walls and doors and invisible walls in bitmap format, per tile.
                                 // [3:0] = walls per direction
                                 // [7:4] = doors per direction
                                 // [11:8]  = invisible walls per direction
-                                // [16:12] = terrain style index to list terrains
-    byte visible[68][68]; // player map visibility: 0=unk, 1=known(fog), 2=visible
-    byte valid[68][68];   // flag for valid/invalid tiles
+                                // [15:12] = AVAILABLE 4 bits
+                                // [23:16] = terrain style index to list terrains
+                                // [32:24] = location index to list locations (not saved in map)
+    byte **visible; // player map visibility: 0=unk, 1=known(fog), 2=visible
+    byte **valid;   // flag for valid/invalid tiles
 
 };  // map and maps[] : Global instantiated in dungeon.c
 
-struct tile_s {
+/*
+struct tile_s {     // UNUSED
     uint32_t       walls :4;      // drawm walls
     uint32_t       doors :4;      // doors can be opened
     uint32_t       keepout :4;    // invisible walls
@@ -148,18 +165,19 @@ union tile_u {
     uint32_t      all;
     struct tile_s field;
 };
+*/
 
 // GLOBAL variables
 extern struct map_s map;        // the current map
 extern struct map_s maps[10];   // all the maps
 extern int valid_maps[10];      // is each map already loaded?
 extern int current_map_num;
-extern struct object_s objects[50];
+extern struct object_s *objects;
 extern int num_objects;
 
 #define ifloor(f) ((int)floor(f))
 // Function prototypes
-// called by sdl_draw:: and player:: and dungeon::
+// called by sdl_draw:: and player:: and dungeon:: and monster:: and map_io::
 extern int get_wall(int number, int position);
 extern int get_wall_xy(float x, float y, int dir);
 extern int get_door(int number, int position);       // returns bit[4] whether door is present in dir
@@ -171,6 +189,13 @@ extern int get_both_bits_xy(float x, float y, int dir);
 extern int toggle_wall_xy(float x, float y, int dir, int offset);
 extern int get_any_wall(int number, int position);   // invisible walls count as walls
 extern int get_any_wall_xy(float x, float y, int dir);
+extern int view_in_dir_xy(float x, float y, int dir);
+extern int get_is_clear_xy(float x, float y, int dir); // any wall, door, or invisible wall
+extern int get_x_in_dir(int x, int dir);             // get location if you move in direction
+extern int get_y_in_dir(int y, int dir);
+extern int get_valid_xy(int x, int y);               // range check and return valid for a location.
+
+
 extern int opposite(int dir);                        // opposite direction from dir
 extern int rotate_r(int dir);                        // right rotation from dir
 extern int rotate_l(int dir);                        // left rotation from dir
@@ -179,10 +204,29 @@ extern int get_view_cost_xy(int x, int y);
 extern int get_travel_cost_xy(int x, int y);
 extern int get_view_distance(void);
 extern int get_travel_distance(void);
-// unused
 extern float dir_to_degrees(int dir);
 
+extern void reveal_all_map(void);
+extern void lose_map(void);
+/* === NOTES on switching to 8 directional travel ===
+DRAW *4
+ see_wall_in_dir
+ see_door_in_dir
+ what_seen_in_dir
+ 
+ROUTE PLANNING *8
+ PLAN_walk_in_dir (includes door opening if able)
+
+ROUTE FOLLOWING *8
+ TRAVEL_get_step_in_dir, returns direction and step size
+ --in final tile, make sure to not over-step
+
+VISION (MAP VIEW) *8
+ VIEW_in_dir
+ 
+ */
+
 // called by sdl_draw::dirty_display_handler
-extern int player_view_simple(void);                 // fills map.visible with current visible room/halls
-extern int player_view_noback(void);
+extern int player_view_noback(void);  // fills map.visible with current visible room/halls
+
 // TODO: add more complex player view functions

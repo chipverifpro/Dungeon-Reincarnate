@@ -4,8 +4,6 @@
 //globals
 SDL_Window *window;       // SDL context
 SDL_Renderer *renderer;   // SDL context
-//SDL_Texture *walls_texture[10]; // for custom walls
-//int num_walls_texture;
 SDL_Texture *texture;     // NOT the screen, but a separate drawing target.
 int timer_id;             // don't know what this may be needed for
 int option_enable_shadows = 0;
@@ -767,6 +765,7 @@ int sdl_draw_map(float x_center, float y_center, int style) {
 
     struct F_Rect_s *rtemp1;
     int           rcount;      // number of rectangles in current symbol (rtemp*, scr_rects)
+    SDL_Color light, dark;     // for shading the tiles
 
     // variables used in both drawing walls and symbols
     float scr_center_x, scr_center_y; // in screen coordinates
@@ -788,12 +787,12 @@ int sdl_draw_map(float x_center, float y_center, int style) {
     // First pass, just draw floors.
     for (y=0; y<map.y_size; y++) {  // x,y in integer map coordinates
         for (x=0; x<map.x_size; x++) {
-            walls = map.walls[x][y];
+            //walls = map.walls[x][y];
             scr_x = map_origin_x + (x * sw_scale);
             scr_y = map_origin_y + (y * sw_scale);
             off_map = 1-map.valid[x][y];
             visible = map.visible[x][y];
-            tnum = map.walls[x][y]>>12 & 0xF;
+            tnum = map.walls[x][y]>>16 & 0xFF;
             //if (terrain !=0) printf("Terrain floor = %d, x,y=%d,%d\n",terrain,x,y);
             // clear the tile (draw the floor)
             if (off_map || visible==0) {  //TODO: Add style
@@ -805,23 +804,55 @@ int sdl_draw_map(float x_center, float y_center, int style) {
                 SetRenderDrawColorPct(renderer, map.terrains[tnum].c_floor,1.0);
                 //printf("FloorT[%d]=%02x,%02x,%02x,%02x\n",tnum,map.terrains[tnum].c_floor.r,map.terrains[tnum].c_floor.g,map.terrains[tnum].c_floor.b,map.terrains[tnum].c_floor.a);
             }
+            // draw the solid color floor:
             sdl_draw_transformed_rects(cell_floor,cell_floor_rcount,0,scr_x,scr_y,1.01,1.01);
+ 
+            // draw the floor texture:
+            if (!off_map && visible!=0 && map.terrains[tnum].floor_texture!=NULL) {
+                if (map.terrains[tnum].floor_mode==2) {
+                    light = map.terrains[tnum].c_floor;
+                    dark = color_intensity(light, 50);
+                    if (visible==255) {
+                        SDL_SetTextureColorMod(map.terrains[tnum].floor_texture, dark.r, dark.g, dark.b);
+                    } else {
+                        SDL_SetTextureColorMod(map.terrains[tnum].floor_texture, light.r, light.g, light.b);
+                    }
+                }
+                draw_image(map.terrains[tnum].floor_texture,
+                               scr_x+sw_scale/2, scr_y+sw_scale/2,
+                               sw_scale, sw_scale,
+                               0, x+y);
+
+            }
         }
     }
     // Second Pass, just draw special walls
     //if (map.terrains[0].wall_texture != NULL) {
         for (y=0; y<map.y_size; y++) {  // x,y in integer map coordinates
             for (x=0; x<map.x_size; x++) {
-                walls = map.walls[x][y];
+                //walls = map.walls[x][y];
                 scr_x = map_origin_x + ((x+0.5) * sw_scale);
                 scr_y = map_origin_y + ((y+0.5) * sw_scale);
                 off_map = 1-map.valid[x][y];
                 visible = map.visible[x][y];
-                tnum = map.walls[x][y]>>12 & 0xF;
+                tnum = map.walls[x][y]>>16 & 0xFF;
                 //if (terrain !=0) printf("Terrain walls = %d, x,y=%d,%d\n",terrain,x,y);
                 if (!(off_map || visible==0)) {
                     // draw the wall symbols: perimiter 4 sides (walls or doors)
                     for (dir=0;dir<=3;dir++) {
+                        if (map.terrains[tnum].wall_mode==2) {
+                            light = map.terrains[tnum].c_wall;
+                            dark = color_intensity(light, 50);
+                            if (visible==255) {     // TODO: doors currently use wall color, not door color.
+                                SDL_SetTextureColorMod(map.terrains[tnum].wall_texture, dark.r, dark.g, dark.b);
+                                SDL_SetTextureColorMod(map.terrains[tnum].door_open_texture, dark.r, dark.g, dark.b);
+                                SDL_SetTextureColorMod(map.terrains[tnum].door_closed_texture, dark.r, dark.g, dark.b);
+                            } else {
+                                SDL_SetTextureColorMod(map.terrains[tnum].wall_texture, light.r, light.g, light.b);
+                                SDL_SetTextureColorMod(map.terrains[tnum].door_open_texture, light.r, light.g, light.b);
+                                SDL_SetTextureColorMod(map.terrains[tnum].door_closed_texture, light.r, light.g, light.b);
+                            }
+                        }
                         both_bits = get_both_bits_xy(x,y,dir);
                         //printf("both_bits: walls=%x, dir=%d\n",walls,dir);
                         if (both_bits == 0x01) {
@@ -850,12 +881,12 @@ int sdl_draw_map(float x_center, float y_center, int style) {
     // Third Pass, just draw walls/doors lines
     for (y=0; y<map.y_size; y++) {  // x,y in integer map coordinates
         for (x=0; x<map.x_size; x++) {
-            walls = map.walls[x][y];
+            //walls = map.walls[x][y];
             scr_x = map_origin_x + (x * sw_scale);
             scr_y = map_origin_y + (y * sw_scale);
             off_map = 1-map.valid[x][y];
             visible = map.visible[x][y];
-            tnum = map.walls[x][y]>>12 & 0xF;
+            tnum = map.walls[x][y]>>16 & 0xFF;
             //if (terrain !=42) printf("Terrain wall lines = %d, x,y=%d,%d\n",terrain,x,y);
             if (!(off_map || visible==0)) {
                 // draw the perimiter 4 sides (walls or doors)
@@ -1037,7 +1068,7 @@ void dirty_display_handler(void) {
     // update display if needed, from commands or from timer for animation
     if(dirty_display>0) {
         //printf("Updating display. dirty_display=%d.\n", dirty_display);
-        if (texture==NULL) {
+        if (texture==NULL && option_enable_shadows) {
             texture = create_render_texture ((map.x_size)*sw_scale, (map.y_size)*sw_scale);
             if (texture == NULL) {
                 printf("create_render_texture () returned NULL: %s\n",SDL_GetError());

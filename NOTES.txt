@@ -1,6 +1,34 @@
 Dungeon Reincarnate revision and progress notes...
 
-11/2 - Monsters can be made to face left or right instead of 0 or 4 dirs.  Circular view radius.  Monster route range checking.
+12/11- More statues.  Fix bug of max render size only applies to fancy shadows mode.
+12/10- Add 6 AI statues.
+11/28- nothing, bad headache.
+11/27- wrote consistancy check.  cleaned up all three MsM maps.
+11/26- Added virtual stairs anywhere.
+11/25- Moved texture bits to [24:16] to so it can have 256 instead of 16 textures.  Also removed location information from save maps.
+11/24- Remember last texture applied and use again.  Edit MsM Depths water and rocks.  Add keycommands for up and down levels.
+11/23- Expand MsM Depths map to include water North and West.
+11/22- MsM map cleanup, locations.  Fix bug in first location per floor assigned #0, which is none.
+11/21- Reveal and lose maps functions updated to load objects, map, and locations.
+11/20- Locations for remaining floors of MsM.  Cleanup read_locations_csv.
+11/19- Location: structure, load, grow, print.  MsM floor 1 locations created.
+11/18- Planning for Room Descriptions, creating locations.csv
+11/17- MsM map and stairs cleanup.  Added reload of objects.csv, not quite right, some objects disappear.
+11/16- Added map name to window title. MsM stairs on Grand Degree fix.
+11/15- Map edits.
+11/14- Printed MsM three floors for review and list of stairs.  Review and update all stairs.
+11/13- Complete MsM maps first draft.  Working on stairs.  Fixed bug in saving maps only keeping first 10 textures.
+11/12- Added shading of floor and walls when in fog.  Created spiral stairway graphic.  Began Cathedral Depths map.
+11/11- MsM Undercroft map.  Create big seed in route planning when initial plan fails.  Fixed missing code in drawing floor tile textures.
+11/10- Fixed monster view and route maps dynamic allocations.
+11/9 - Installed stairs to nowhere in MsM Cathedral.
+11/8 - Even More MsM Cathedral.  Fixed bug in load map when there are more rows than allocated.
+11/7 - More MsM Cathedral.  Squashed bugs in split_csv relating to expanding an existing map.
+11/6 - Continue MsM Cathedral.  Fixed bug relating to maps over 64x64.  Planned necessary terrains for MsM.
+11/5 - Begin MsM Cathdral.  Generate map with aligned grid in Gimp.
+11/4 - Walls can now be made see-through by setting invisible wall at same location.
+11/3 - Dynamically allocate map and object arrays.  Plans for 8 directional travel, route planning, and view.
+11/2 - Monsters can be made to face left or right instead of 0 or 4 dirs.  Circular view radius.  Monster route range checking. Fence graphics, fixed map write csv. [.BAKF]
 11/1 - Implemented monster.csv loading. Pac-man ghosts and an Ultima III dragon.
 10/31- Fixed default travel costs.  Messages don't repeat; properly roll around 25 messages, more messages.  Vertical images had a divide by zero problem with determining tiling, fixed.
 10/30- Clean up lint warnings. Make messages a 25 entry circular list. Fixed zoom out crash. Added view range limits and per-terrain view and travel cost.  Fixed cave door graphic.

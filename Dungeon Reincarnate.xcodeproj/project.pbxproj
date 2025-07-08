@@ -38,14 +38,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B81517A32CD9EB0700AAF0FF /* map5.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map5.csv; path = Maps/map5.csv; sourceTree = "<group>"; };
+		B81517A52CE2E6B300AAF0FF /* map6.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map6.csv; path = Maps/map6.csv; sourceTree = "<group>"; };
+		B81517A62CE4528200AAF0FF /* map7.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map7.csv; path = Maps/map7.csv; sourceTree = "<group>"; };
 		B877FC5B2CD34FF200900515 /* map1.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map1.csv; path = Maps/map1.csv; sourceTree = "<group>"; };
 		B877FC5C2CD3501700900515 /* map2.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map2.csv; path = Maps/map2.csv; sourceTree = "<group>"; };
 		B877FC5D2CD3501700900515 /* map3.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map3.csv; path = Maps/map3.csv; sourceTree = "<group>"; };
 		B877FC5E2CD3501700900515 /* map4.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = map4.csv; path = Maps/map4.csv; sourceTree = "<group>"; };
 		B877FC5F2CD3503100900515 /* objects.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = objects.csv; path = Maps/objects.csv; sourceTree = "<group>"; };
-		B877FC602CD3EECC00900515 /* NOTES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.txt; sourceTree = "<group>"; };
 		B877FC612CD52DC400900515 /* monsters.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = monsters.csv; path = Maps/monsters.csv; sourceTree = "<group>"; };
 		B8C4B09D2CD2905600F31AEB /* TestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPlan.xctestplan; sourceTree = "<group>"; };
+		B8C86E0E2CEA7CC90071203A /* NOTES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.txt; sourceTree = "<group>"; };
+		B8C86E0F2CECF1360071203A /* locations.csv */ = {isa = PBXFileReference; lastKnownFileType = text; name = locations.csv; path = Maps/locations.csv; sourceTree = "<group>"; };
 		B8CDA93E2CD0A501003E2E05 /* Dungeon Reincarnate */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Dungeon Reincarnate"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8CDA9482CD0A618003E2E05 /* all_headers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = all_headers.h; sourceTree = "<group>"; };
 		B8CDA9492CD0A618003E2E05 /* battle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = battle.h; sourceTree = "<group>"; };
@@ -105,13 +109,17 @@
 			isa = PBXGroup;
 			children = (
 				B8C4B09D2CD2905600F31AEB /* TestPlan.xctestplan */,
-				B877FC602CD3EECC00900515 /* NOTES.txt */,
+				B8C86E0E2CEA7CC90071203A /* NOTES.txt */,
 				B877FC5B2CD34FF200900515 /* map1.csv */,
 				B877FC5C2CD3501700900515 /* map2.csv */,
 				B877FC5D2CD3501700900515 /* map3.csv */,
 				B877FC5E2CD3501700900515 /* map4.csv */,
+				B81517A32CD9EB0700AAF0FF /* map5.csv */,
+				B81517A52CE2E6B300AAF0FF /* map6.csv */,
+				B81517A62CE4528200AAF0FF /* map7.csv */,
 				B877FC5F2CD3503100900515 /* objects.csv */,
 				B877FC612CD52DC400900515 /* monsters.csv */,
+				B8C86E0F2CECF1360071203A /* locations.csv */,
 				B8CDA9482CD0A618003E2E05 /* all_headers.h */,
 				B8CDA9492CD0A618003E2E05 /* battle.h */,
 				B8CDA94A2CD0A618003E2E05 /* battle.c */,

@@ -73,5 +73,6 @@ Here is the state of the game as it is now.  It is likely to resume.
 
 <img width="601" height="631" alt="Screenshot 2025-07-08 at 11 48 03 AM" src="https://github.com/user-attachments/assets/660f47b0-da8d-4dc8-811a-4312be35b983" />
 
+<img width="602" height="629" alt="Screenshot 2025-07-13 at 3 25 29 PM" src="https://github.com/user-attachments/assets/d364ec37-38c5-4fdf-b0b4-16a0b9357984" />
 
 

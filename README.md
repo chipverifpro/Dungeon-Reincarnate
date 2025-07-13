@@ -75,4 +75,6 @@ Here is the state of the game as it is now.  It is likely to resume.
 
 <img width="602" height="629" alt="Screenshot 2025-07-13 at 3 25 29 PM" src="https://github.com/user-attachments/assets/d364ec37-38c5-4fdf-b0b4-16a0b9357984" />
 
+<img width="525" height="750" alt="Dungeon_maze_solver_2" src="https://github.com/user-attachments/assets/ff326756-9dfe-4a82-a78b-c6b8f0c95eaa" />
+
 
